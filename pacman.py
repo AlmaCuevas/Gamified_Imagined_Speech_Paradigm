@@ -10,20 +10,20 @@ WIDTH = 900
 HEIGHT = 950
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
-fps = 60
+fps = 60 # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font('freesansbold.ttf', 20)
 level = copy.deepcopy(boards)
 color = 'blue'
 PI = math.pi
 player_images = []
 for i in range(1, 5):
-    player_images.append(pygame.transform.scale(pygame.image.load(f'assets/player_images/{i}.png'), (45, 45)))
-blinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/red.png'), (45, 45))
-pinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/pink.png'), (45, 45))
-inky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/blue.png'), (45, 45))
-clyde_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/orange.png'), (45, 45))
-spooked_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/powerup.png'), (45, 45))
-dead_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/dead.png'), (45, 45))
+    player_images.append(pygame.transform.scale(pygame.image.load(f'assets/player_images/{i}.png'), (40, 40)))
+blinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/red.png'), (40, 40))
+pinky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/pink.png'), (40, 40))
+inky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/blue.png'), (40, 40))
+clyde_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/orange.png'), (40, 40))
+spooked_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/powerup.png'), (40, 40))
+dead_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/dead.png'), (40, 40))
 player_x = 450
 player_y = 663
 direction = 0
@@ -59,7 +59,7 @@ inky_box = False
 clyde_box = False
 pinky_box = False
 moving = False
-ghost_speeds = [2, 2, 2, 2]
+ghost_speeds = [0, 0, 0, 0]
 startup_counter = 0
 lives = 3
 game_over = False
@@ -667,15 +667,19 @@ def draw_misc():
     for i in range(lives):
         screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (650 + i * 40, 915))
     if game_over:
-        pygame.draw.rect(screen, 'white', [50, 200, 800, 300],0, 10)
-        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
-        gameover_text = font.render('Game over! Space bar to restart!', True, 'red')
-        screen.blit(gameover_text, (100, 300))
+        pygame.draw.rect(screen, 'red', [50, 200, 800, 300],0, 10)
+        pygame.draw.rect(screen, 'gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Game over!', True, 'red')
+        gameover_text2 = font.render('Space bar to restart!', True, 'red')
+        screen.blit(gameover_text, (400, 270))
+        screen.blit(gameover_text2, (350, 370))
     if game_won:
-        pygame.draw.rect(screen, 'white', [50, 200, 800, 300],0, 10)
-        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
-        gameover_text = font.render('Victory! Space bar to restart!', True, 'green')
-        screen.blit(gameover_text, (100, 300))
+        pygame.draw.rect(screen, 'green', [50, 200, 800, 300],0, 10)
+        pygame.draw.rect(screen, 'gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Victory!', True, 'green')
+        gameover_text2 = font.render('Space bar to restart!', True, 'red')
+        screen.blit(gameover_text, (400, 270))
+        screen.blit(gameover_text2, (350, 370))
 
 
 def check_collisions(scor, power, power_count, eaten_ghosts):
