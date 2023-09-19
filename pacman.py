@@ -1,6 +1,6 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
-from board import boards
+from board import original_board
 import pygame
 import math
 
@@ -12,7 +12,7 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60 # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font('freesansbold.ttf', 20)
-level = copy.deepcopy(boards)
+level = copy.deepcopy(original_board)
 color = 'blue'
 PI = math.pi
 player_images = []
@@ -59,7 +59,7 @@ inky_box = False
 clyde_box = False
 pinky_box = False
 moving = False
-ghost_speeds = [0, 0, 0, 0]
+ghost_speeds = [1, 1, 1, 1]
 startup_counter = 0
 lives = 3
 game_over = False
@@ -1183,7 +1183,7 @@ while run:
                 pinky_dead = False
                 score = 0
                 lives = 3
-                level = copy.deepcopy(boards)
+                level = copy.deepcopy(original_board)
                 game_over = False
                 game_won = False
 
