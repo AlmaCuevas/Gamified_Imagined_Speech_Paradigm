@@ -18,6 +18,14 @@ PI = math.pi
 player_images = []
 for i in range(1, 5):
     player_images.append(pygame.transform.scale(pygame.image.load(f'assets/player_images/{i}.png'), (40, 40)))
+arrow = pygame.transform.scale(pygame.image.load(f'assets/extras_images/arrow.png'), (40, 40))
+arrow_transparent = pygame.transform.scale(pygame.image.load(f'assets/extras_images/arrow_transparent.png'), (40, 40))
+arrow_images = [pygame.transform.rotate(arrow, -90), pygame.transform.rotate(arrow, 90), arrow,
+                pygame.transform.rotate(arrow, 180)] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+arrow_transparent_images = [pygame.transform.rotate(arrow_transparent, -90), pygame.transform.rotate(arrow_transparent, 90), arrow_transparent,
+                pygame.transform.rotate(arrow_transparent, 180)] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+arrow_x = [150, 50, 100, 100] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+arrow_y = [100, 100, 50, 150] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 player_x = 450
 player_y = 663
 direction = 0
@@ -263,14 +271,13 @@ while run:
             if event.key == pygame.K_DOWN and direction_command == 3:
                 direction_command = direction
 
-    if direction_command == 0 and turns_allowed[0]:
-        direction = 0
-    if direction_command == 1 and turns_allowed[1]:
-        direction = 1
-    if direction_command == 2 and turns_allowed[2]:
-        direction = 2
-    if direction_command == 3 and turns_allowed[3]:
-        direction = 3
+    for direction_index in range(0, 4):
+        if direction_command == direction_index:
+            screen.blit(arrow_images[direction_index], (arrow_x[direction_index], arrow_y[direction_index]))
+            if turns_allowed[direction_index]:
+                direction = direction_index
+        else:
+            screen.blit(arrow_transparent_images[direction_index], (arrow_x[direction_index], arrow_y[direction_index]))
 
     if player_x > 900:
         player_x = -47
