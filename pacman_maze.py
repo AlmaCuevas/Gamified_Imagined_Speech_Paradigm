@@ -6,7 +6,7 @@ import math
 
 pygame.init()
 boards = [maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
-WIDTH = 900
+WIDTH = 900 # Don't use complete screen, you'll will have to alt+f4. Plus the whole board expands, doesn't stay the same.
 HEIGHT = 950
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
