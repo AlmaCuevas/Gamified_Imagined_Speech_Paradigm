@@ -1,11 +1,11 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
-from board import maze_A, maze_B, maze_C, maze_D, maze_E, maze_F, original_board
+from board import path_1, path_2
 import pygame
 import math
 
 pygame.init()
-boards = [maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
+boards = [path_1, path_2]
 WIDTH = 900 # Don't use complete screen, you'll will have to alt+f4. Plus the whole board expands, doesn't stay the same.
 HEIGHT = 950
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
@@ -19,6 +19,9 @@ player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (40, 40)),
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (40, 40)),
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (40, 40))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+number_images = []
+for i in range(0, 13):
+    number_images.append(pygame.transform.scale(pygame.image.load(f'assets/extras_images/number_{i}.png'), (40, 40)))
 arrow = pygame.transform.scale(pygame.image.load(f'assets/extras_images/arrow.png'), (40, 40))
 arrow_transparent = pygame.transform.scale(pygame.image.load(f'assets/extras_images/arrow_transparent.png'), (40, 40))
 arrow_images = [pygame.transform.rotate(arrow, -90), pygame.transform.rotate(arrow, 90), arrow,
