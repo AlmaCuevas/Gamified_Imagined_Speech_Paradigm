@@ -3,7 +3,17 @@ import copy
 from board import maze_A, maze_B, maze_C, maze_D, maze_E, maze_F, original_board
 import pygame
 import math
+import pylsl
 
+# LSL COMMUNICATION
+def lsl_mrk_outlet(name):
+    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
+    outlet = pylsl.stream_outlet(info, 1, 1)
+    print('pacman created result outlet.')
+    return outlet
+mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers') # important this is first
+
+# GAME
 pygame.init()
 boards = [maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
 WIDTH = 900 # Don't use complete screen, you'll will have to alt+f4. Plus the whole board expands, doesn't stay the same.
@@ -229,6 +239,7 @@ while run:
     draw_misc()
 
     turns_allowed = check_position(center_x, center_y)
+    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
     score, powerup, power_counter, eaten_ghost = check_collisions(score, powerup, power_counter, eaten_ghost)
