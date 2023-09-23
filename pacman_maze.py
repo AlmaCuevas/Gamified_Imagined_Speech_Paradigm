@@ -3,15 +3,15 @@ import copy
 from board import maze_A, maze_B, maze_C, maze_D, maze_E, maze_F, original_board
 import pygame
 import math
-import pylsl
+#import pylsl
 
 # LSL COMMUNICATION
-def lsl_mrk_outlet(name):
-    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
-    outlet = pylsl.stream_outlet(info, 1, 1)
-    print('pacman created result outlet.')
-    return outlet
-mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers') # important this is first
+#def lsl_mrk_outlet(name):
+#    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
+#    outlet = pylsl.stream_outlet(info, 1, 1)
+#    print('pacman created result outlet.')
+#    return outlet
+#mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers') # important this is first
 
 # GAME
 pygame.init()
@@ -23,6 +23,8 @@ timer = pygame.time.Clock()
 fps = 60 # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font('freesansbold.ttf', 20)
 level = copy.deepcopy(boards.pop(0))
+div_width = len(level[0])
+div_height = len(level)-1
 color = 'blue'
 PI = math.pi
 player_images = []
@@ -34,7 +36,7 @@ arrow_images = [pygame.transform.rotate(arrow, -90), pygame.transform.rotate(arr
                 pygame.transform.rotate(arrow, 180)] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_transparent_images = [pygame.transform.rotate(arrow_transparent, -90), pygame.transform.rotate(arrow_transparent, 90), arrow_transparent,
                 pygame.transform.rotate(arrow_transparent, 180)] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-arrow_x = [150, 50, 100, 100] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+arrow_x = [70, 10, 40, 40] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_y = [100, 100, 50, 150] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 player_x = 450
 player_y = 663
@@ -62,7 +64,7 @@ def draw_misc():
     if powerup:
         pygame.draw.circle(screen, 'blue', (140, 930), 15)
     for i in range(lives):
-        screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (650 + i * 40, 915))
+        screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (40, 215 + i * 40))
     if game_over:
         pygame.draw.rect(screen, 'red', [50, 200, 800, 300],0, 10)
         pygame.draw.rect(screen, 'gray', [70, 220, 760, 260], 0, 10)
@@ -80,9 +82,12 @@ def draw_misc():
 
 
 def check_collisions(scor, power, power_count, eaten_ghosts):
-    num1 = (HEIGHT - 50) // 32
-    num2 = WIDTH // 30
+    num1 = (HEIGHT - 50) // div_height
+    num2 = WIDTH // div_width
     if 0 < player_x < 870:
+        for mod in mods:
+            if level[center_y // num1][(center_x+ mod) // num2] in [5, 6, 7, 8]:  # arc numbers
+                level[center_y // num1][center_x // num2] = -1
         if level[center_y // num1][center_x // num2] == 1:
             level[center_y // num1][center_x // num2] = 0
             scor += 10
@@ -94,10 +99,9 @@ def check_collisions(scor, power, power_count, eaten_ghosts):
             eaten_ghosts = [False, False, False, False]
     return scor, power, power_count, eaten_ghosts
 
-
 def draw_board():
-    num1 = ((HEIGHT - 50) // 32)
-    num2 = (WIDTH // 30)
+    num1 = ((HEIGHT - 50) // div_height)
+    num2 = (WIDTH // div_width)
     for i in range(len(level)):
         for j in range(len(level[i])):
             if level[i][j] == 1:
@@ -126,6 +130,8 @@ def draw_board():
             if level[i][j] == 9:
                 pygame.draw.line(screen, 'white', (j * num2, i * num1 + (0.5 * num1)),
                                  (j * num2 + num2, i * num1 + (0.5 * num1)), 3)
+            if level[i][j] == -1:
+                pygame.draw.rect(screen, 'yellow', [j * num2 + (-0.4 * num2), i * num1 + (-0.4 * num1), 55, 55], border_radius=10)
 
 
 def draw_player():
@@ -142,8 +148,8 @@ def draw_player():
 
 def check_position(centerx, centery):
     turns = [False, False, False, False]
-    num1 = (HEIGHT - 50) // 32
-    num2 = (WIDTH // 30)
+    num1 = (HEIGHT - 50) // div_height
+    num2 = (WIDTH // div_width)
     num3 = 15
     # check collisions based on center x and center y of player +/- fudge number
     if centerx // 30 < 29:
@@ -232,14 +238,17 @@ while run:
     for i in range(len(level)):
         if 1 in level[i] or 2 in level[i]:
             game_won = False
-
-    player_circle = pygame.draw.circle(screen, 'black', (center_x, center_y), 20, 2)
+    mods = [20, -20, 40, -40]
+    player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y), 20, 10)
+    player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y), 20, 10)
+    player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x, center_y + mods[2]), 20, 10)
+    player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x, center_y + mods[3]), 20, 10)
     draw_player()
 
     draw_misc()
 
     turns_allowed = check_position(center_x, center_y)
-    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
+    #mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
     score, powerup, power_counter, eaten_ghost = check_collisions(score, powerup, power_counter, eaten_ghost)
