@@ -1206,6 +1206,7 @@ while run:
     if direction_command == 3 and turns_allowed[3]:
         direction = 3
 
+    # This is for the pacman to move from one side of the screen to the other.
     if player_x > 900:
         player_x = -47
     elif player_x < -50:
