@@ -116,21 +116,6 @@ def draw_misc():
 def check_collisions(scor, power, power_count, last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
     if 0 < player_x < 870:
-        for mod in mods:
-            for mod_2 in mods:
-                if level[(center_y + mod) // num1][(center_x + mod_2) // num2] in [
-                    5,
-                    6,
-                    7,
-                    8,
-                ] and level[(center_y - mod) // num1][(center_x - mod_2) // num2] in [
-                    5,
-                    6,
-                    7,
-                    8,
-                ]:  # arc numbers
-                    level[center_y // num1][center_x // num2] = -1
-                    last_activate_turn_tile = [center_y // num1, center_x // num2]
         if level[center_y // num1][center_x // num2] == 1:
             level[center_y // num1][center_x // num2] = 0
             scor += 10
@@ -228,13 +213,6 @@ def draw_board():
                     (j * num2, i * num1 + (0.5 * num1)),
                     (j * num2 + num2, i * num1 + (0.5 * num1)),
                     3,
-                )
-            if level[i][j] == -1:
-                pygame.draw.rect(
-                    screen,
-                    "yellow",
-                    [j * num2 + (-0.5 * num2), i * num1 + (-0.5 * num1), 60, 60],
-                    border_radius=10,
                 )
 
 
@@ -365,12 +343,6 @@ while run:
     for i in range(len(level)):
         if 1 in level[i] or 2 in level[i]:
             game_won = False
-    mods = [25, -25]
-    # Collider viewer
-    # player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y+mods[0]), 20, 10)
-    # player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[0], center_y+mods[1]), 20, 10)
-    # player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[0]), 20, 10)
-    # player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[1]), 20, 10)
     angle = draw_player(angle)
 
     draw_misc()
