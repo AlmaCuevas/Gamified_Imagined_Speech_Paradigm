@@ -6,7 +6,6 @@ import math
 import time
 import pyautogui
 
-start_time = pygame.time.get_ticks()
 
 # import pylsl
 
@@ -318,7 +317,6 @@ run = True
 step_counter = 0
 while run:
     timer.tick(fps)
-
     if counter < 19:
         counter += 1
         if counter > 3:
@@ -340,9 +338,7 @@ while run:
 
 
 
-
     screen.fill("black")
-
     draw_board()
     center_x = player_x + 23
     center_y = player_y + 24
@@ -388,9 +384,7 @@ while run:
         current_command = commands_list.pop(0)
         pyautogui.keyDown(current_command)
         print(current_command)
-        goal_x, goal_y = command_leader(current_command, player_y, player_x)
-        
-       
+        goal_x, goal_y = command_leader(current_command, player_y, player_x) 
 
 
     for event in pygame.event.get():
