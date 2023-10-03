@@ -352,5 +352,10 @@ start_2 = [16, 35, 2]
 boards = [path_2, maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
 start_positions=[start_2, start_F, start_E, start_D, start_C, start_B, start_A, start_original_board]
 
+
+path_commands_1 = ['up', 'left', 'down', 'left', 'right', 'down', 'right', 'down', 'right', 'up', 'down', 'left', 'up', 'up', 'right', 'up', 'right', 'down', 'right', 'down', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'down', 'left', 'right', 'up', 'up', 'down', 'right', 'down', 'up', 'down', 'left', 'right', 'up', 'left', 'up', 'down', 'left', 'left']
+path_commands_2 = ['up', 'left', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'left', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right']
+path_commands_3 = ['up', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'right', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'right']
 boards_paradigm_SI=[path_2, path_1]
 start_positions_paradigm_SI=[start_2, start_1]
+commands_list_board =[path_commands_2, path_commands_1, path_commands_3]

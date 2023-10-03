@@ -4,6 +4,8 @@ from board import boards_paradigm_SI, start_positions_paradigm_SI
 import pygame
 import math
 import time
+import pyautogui
+import time
 
 # import pylsl
 
@@ -17,14 +19,18 @@ import time
 
 # GAME
 pygame.init()
+commands_list_board=[['up','left','left','right','right','up','left', 'left', 'up', 'up'],['up','left','left','right','right','up','left', 'left', 'up']]
 ## Dimensions
 WIDTH = 800  # The whole board expands, but the measures like the initial position changes too.
 HEIGHT = 800  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
 level = copy.deepcopy(boards_paradigm_SI.pop(0))
 div_width = len(level[0])  # 33
 div_height = len(level)  # 33
-num1 = HEIGHT // div_height
-num2 = WIDTH // div_width
+num1 = HEIGHT // div_height #23
+num2 = WIDTH // div_width #29
+
+commands_list = commands_list_board.pop(0)
+ # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN, 4-STOP
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 # tiny_screen = pygame.display.set_mode([300,300])
@@ -34,14 +40,13 @@ font = pygame.font.Font("freesansbold.ttf", 20)
 color = "blue"
 PI = math.pi
 
+
 ## Images import
-player_images = []
-for i in range(1, 5):
-    player_images.append(
-        pygame.transform.scale(
-            pygame.image.load(f"assets/player_images/{i}.png"), (40, 40)
-        )
-    )
+player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (40, 40))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+
 arrow = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow.png"), (30, 30)
 )
@@ -63,16 +68,19 @@ arrow_transparent_images = [
 arrow_x = [65, 5, 35, 35]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 
-## Positions and other
+## Positions
 start = start_positions_paradigm_SI.pop(0)
 player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
 player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
 direction = start[2]
+last_direction = start[2]
+
+#Other
 counter = 0
 flicker = False
 turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-direction_command = 4
-player_speed = 2
+direction_command = start[2]
+player_speed = 1
 score = 0
 powerup = False
 power_counter = 0
@@ -88,7 +96,6 @@ lives = 3
 game_over = False
 game_won = False
 last_activate_turn_tile = [1, 1]
-angle=0
 
 def draw_misc():
     score_text = font.render(f"Score: {score}", True, "white")
@@ -114,6 +121,18 @@ def draw_misc():
         screen.blit(gameover_text, (400, 270))
         screen.blit(gameover_text2, (350, 370))
 
+def command_leader(current_command, player_y, player_x):
+    goal_x=player_x
+    goal_y=player_y
+    if current_command == 'right':  # Right
+        goal_x = player_x + num2 * 2 + num2/2
+    elif current_command == 'left':  # Left
+        goal_x = player_x - num2 * 2 - num2/2
+    elif current_command == 'up':  # Up
+        goal_y = player_y - num1 * 3
+    elif current_command == 'down':  # Down
+        goal_y = player_y + num1 * 3
+    return goal_x, goal_y
 
 def check_collisions(scor, power, power_count, last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
@@ -218,40 +237,15 @@ def draw_board():
                 )
 
 
-def draw_player(angle):
+def draw_player(last_direction):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-    if direction == 0:
-        angle=0
-        screen.blit(
-            pygame.transform.rotate(player_images[counter // 5],angle),
-            (player_x, player_y),
-        )
-    elif direction == 1:
-        angle=180
-        screen.blit(
-            pygame.transform.rotate(player_images[counter // 5], angle),
-            (player_x, player_y),
-        )
-    elif direction == 2:
-        angle=90
-        screen.blit(
-            pygame.transform.rotate(player_images[counter // 5], angle),
-            (player_x, player_y),
-        )
-    elif direction == 3:
-        angle=270
-        screen.blit(
-            pygame.transform.rotate(player_images[counter // 5], angle),
-            (player_x, player_y),
-        )
-    elif direction == 4:
-        screen.blit(
-            pygame.transform.rotate(player_images[counter // 5], angle),
-            (player_x, player_y),
-        )
-    return angle
-
-
+    for direction_idx in range(0,4):
+        if direction_idx == direction:
+            last_direction=direction
+            screen.blit(player_images[direction], (player_x, player_y))
+    if direction == 4:
+        screen.blit(player_images[last_direction], (player_x, player_y))
+    return last_direction
 
 def check_position(centerx, centery):
     turns = [False, False, False, False]
@@ -315,6 +309,10 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 
+# Commands
+current_command = commands_list.pop(0)
+goal_x, goal_y = command_leader(current_command, player_y, player_x)
+
 run = True
 step_counter = 0
 while run:
@@ -359,7 +357,7 @@ while run:
     for i in range(len(level)):
         if 1 in level[i] or 2 in level[i]:
             game_won = False
-    angle = draw_player(angle)
+    last_direction = draw_player(last_direction)
 
     draw_misc()
 
@@ -371,6 +369,18 @@ while run:
         score, powerup, power_counter, last_activate_turn_tile
     )
     # add to if not powerup to check if eaten ghosts
+    print(f"goal_x = {goal_x}")
+    print(f"player_x = {player_x}")
+    print(f"goal_y = {goal_y}")
+    print(f"player_y = {player_y}")
+
+    if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
+        time.sleep(3)
+        pyautogui.keyUp(current_command)
+        current_command = commands_list.pop(0)
+        pyautogui.keyDown(current_command)
+        print(current_command)
+        goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -395,12 +405,15 @@ while run:
                 player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
                 player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
                 direction = start[2]
-                direction_command = 4
+                direction_command = start[2]
                 score = 0
                 lives = 3
                 level = copy.deepcopy(boards_paradigm_SI.pop(0))
                 game_over = False
                 game_won = False
+                commands_list = commands_list_board.pop(0)
+                current_command = commands_list.pop(0)
+                goal_x, goal_y, player_y, player_x = command_leader(current_command, player_y, player_x)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE and direction_command == 4:
