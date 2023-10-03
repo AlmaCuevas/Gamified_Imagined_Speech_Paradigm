@@ -315,7 +315,6 @@ def change_colors():
     draw_misc()
     draw_player(last_direction)
     pygame.display.flip()
-    print("En el if")
     time.sleep(1.4)
 
     # Purple (Auditory Speech)
