@@ -3,6 +3,7 @@ import copy
 from board import boards_paradigm_SI, start_positions_paradigm_SI
 import pygame
 import math
+import time
 
 # import pylsl
 
@@ -17,8 +18,8 @@ import math
 # GAME
 pygame.init()
 ## Dimensions
-WIDTH = 900  # The whole board expands, but the measures like the initial position changes too.
-HEIGHT = 900  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
+WIDTH = 800  # The whole board expands, but the measures like the initial position changes too.
+HEIGHT = 800  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
 level = copy.deepcopy(boards_paradigm_SI.pop(0))
 div_width = len(level[0])  # 33
 div_height = len(level)  # 33
@@ -26,6 +27,7 @@ num1 = HEIGHT // div_height
 num2 = WIDTH // div_width
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
+# tiny_screen = pygame.display.set_mode([300,300])
 timer = pygame.time.Clock()
 fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font("freesansbold.ttf", 20)
@@ -301,7 +303,8 @@ def check_position(centerx, centery):
 
 def move_player(play_x, play_y):
     # r, l, u, d
-    if direction == 0 and turns_allowed[0]:
+    # If current direction is right and right is allowed, move right
+    if direction == 0 and turns_allowed[0]: 
         play_x += player_speed
     elif direction == 1 and turns_allowed[1]:
         play_x -= player_speed
@@ -313,6 +316,7 @@ def move_player(play_x, play_y):
 
 
 run = True
+step_counter = 0
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -331,10 +335,22 @@ while run:
     if startup_counter < 180 and not game_over and not game_won:
         moving = False
         startup_counter += 1
-    else:
+    elif step_counter < 1.4*fps:
         moving = True
+        step_counter += 1
+        # tiny_screen.fill((0,0,255))
+    else: 
+        moving = False
+        # tiny_screen.fill((255,0,0))
+        step_counter += 1
+        if step_counter > 2*fps:
+            step_counter = 0
+            
+
+
 
     screen.fill("black")
+
     draw_board()
     center_x = player_x + 23
     center_y = player_y + 24
