@@ -346,11 +346,11 @@ path_2 = [
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
-start_1= [10, 35, 2]
+start_1= [11, 35, 2]
 start_2 = [16, 35, 2]
 
-boards = [path_2, maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
-start_positions=[start_2, start_F, start_E, start_D, start_C, start_B, start_A, start_original_board]
+boards = [path_2,path_1, maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
+start_positions=[start_2, start_1, start_F, start_E, start_D, start_C, start_B, start_A, start_original_board]
 
 boards_paradigm_SI=[path_2, path_1]
 start_positions_paradigm_SI=[start_2, start_1]
