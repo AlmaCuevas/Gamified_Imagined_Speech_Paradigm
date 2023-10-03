@@ -308,13 +308,32 @@ def move_player(play_x, play_y):
         play_y += player_speed
     return play_x, play_y
 
+def change_colors():
+    # Green (Imagined Speech)
+    screen.fill("green")
+    draw_board()
+    draw_misc()
+    draw_player(last_direction)
+    pygame.display.flip()
+    print("En el if")
+    time.sleep(1.4)
+
+    # Purple (Auditory Speech)
+    screen.fill("violet")
+    draw_board()
+    draw_misc()
+    draw_player(last_direction)
+    pygame.display.flip()
+    time.sleep(1.4)
+        
+    
 
 # Commands
 current_command = commands_list.pop(0)
 goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 run = True
-step_counter = 0
+first_movement = True
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -336,7 +355,9 @@ while run:
     else:
         moving = True
 
-
+    if moving and first_movement:
+       change_colors()
+       first_movement = False
 
     screen.fill("black")
     draw_board()
@@ -365,20 +386,7 @@ while run:
     print(f"player_y = {player_y}")
 
     if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
-        # Green (Imagined Speech)
-        screen.fill("green")
-        draw_board()
-        draw_misc()
-        draw_player(last_direction)
-        pygame.display.flip()
-        time.sleep(1.4)
-        # Purple (Auditory Speech)
-        screen.fill("violet")
-        draw_board()
-        draw_misc()
-        draw_player(last_direction)
-        pygame.display.flip()
-        time.sleep(1.4)
+        change_colors()
         # Movement
         pyautogui.keyUp(current_command)
         current_command = commands_list.pop(0)
