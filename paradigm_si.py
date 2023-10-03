@@ -5,17 +5,15 @@ import pygame
 import math
 import time
 import pyautogui
-
-
-# import pylsl
+import pylsl
 
 # LSL COMMUNICATION
-# def lsl_mrk_outlet(name):
-#    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
-#    outlet = pylsl.stream_outlet(info, 1, 1)
-#    print('pacman created result outlet.')
-#    return outlet
-# mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers') # important this is first
+def lsl_mrk_outlet(name):
+   info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
+   outlet = pylsl.stream_outlet(info, 1, 1)
+   print('pacman created result outlet.')
+   return outlet
+mrkstream_pygame = lsl_mrk_outlet('PyGame-Events') # important this is first
 
 # GAME
 pygame.init()
@@ -315,6 +313,7 @@ def change_colors():
     draw_misc()
     draw_player(last_direction)
     pygame.display.flip()
+    mrkstream_pygame.push_sample(pylsl.vectorstr([str(current_command)]))
     time.sleep(1.4)
 
     # Purple (Auditory Speech)
@@ -348,7 +347,7 @@ while run:
         power_counter = 0
         powerup = False
         eaten_ghost = [False, False, False, False]
-    if startup_counter < 180 and not game_over and not game_won:
+    if startup_counter < fps*10 and not game_over and not game_won:
         moving = False
         startup_counter += 1
     else:
@@ -372,7 +371,8 @@ while run:
     draw_misc()
 
     turns_allowed = check_position(center_x, center_y)
-    # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
+
+
     if moving:
         player_x, player_y = move_player(player_x, player_y)
     score, powerup, power_counter, last_activate_turn_tile = check_collisions(
