@@ -5,7 +5,8 @@ import pygame
 import math
 import time
 import pyautogui
-import time
+
+start_time = pygame.time.get_ticks()
 
 # import pylsl
 
@@ -317,6 +318,7 @@ run = True
 step_counter = 0
 while run:
     timer.tick(fps)
+
     if counter < 19:
         counter += 1
         if counter > 3:
@@ -333,17 +335,9 @@ while run:
     if startup_counter < 180 and not game_over and not game_won:
         moving = False
         startup_counter += 1
-    elif step_counter < 1.4*fps:
+    else:
         moving = True
-        step_counter += 1
-        # tiny_screen.fill((0,0,255))
-    else: 
-        moving = False
-        # tiny_screen.fill((255,0,0))
-        step_counter += 1
-        if step_counter > 2*fps:
-            step_counter = 0
-            
+
 
 
 
@@ -375,12 +369,29 @@ while run:
     print(f"player_y = {player_y}")
 
     if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
-        time.sleep(3)
+        # Green (Imagined Speech)
+        screen.fill("green")
+        draw_board()
+        draw_misc()
+        draw_player(last_direction)
+        pygame.display.flip()
+        time.sleep(1.4)
+        # Purple (Auditory Speech)
+        screen.fill("violet")
+        draw_board()
+        draw_misc()
+        draw_player(last_direction)
+        pygame.display.flip()
+        time.sleep(1.4)
+        # Movement
         pyautogui.keyUp(current_command)
         current_command = commands_list.pop(0)
         pyautogui.keyDown(current_command)
         print(current_command)
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
+        
+       
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
