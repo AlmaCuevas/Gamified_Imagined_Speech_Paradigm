@@ -18,7 +18,7 @@ import pyautogui
 
 # GAME
 pygame.init()
-commands_list_board=[['up','left','left','right','right','up','left', 'left', 'up'],['up','left','left','right','right','up','left', 'left', 'up']]
+commands_list_board=[['up','left','left','right','right','up','left', 'left', 'up', 'up'],['up','left','left','right','right','up','left', 'left', 'up']]
 ## Dimensions
 WIDTH = 900  # The whole board expands, but the measures like the initial position changes too.
 HEIGHT = 900  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
@@ -123,9 +123,9 @@ def command_leader(current_command, player_y, player_x):
     goal_x=player_x
     goal_y=player_y
     if current_command == 'right':  # Right
-        goal_x = player_x + num2 * 2
+        goal_x = player_x + num2 * 2 + num2/2
     elif current_command == 'left':  # Left
-        goal_x = player_x - num2 * 2
+        goal_x = player_x - num2 * 2 - num2/2
     elif current_command == 'up':  # Up
         goal_y = player_y - num1 * 3
     elif current_command == 'down':  # Down
@@ -241,9 +241,9 @@ def draw_player(last_direction):
         if direction_idx == direction:
             last_direction=direction
             screen.blit(player_images[direction], (player_x, player_y))
-            return last_direction
     if direction == 4:
         screen.blit(player_images[last_direction], (player_x, player_y))
+    return last_direction
 
 def check_position(centerx, centery):
     turns = [False, False, False, False]
