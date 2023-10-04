@@ -309,6 +309,7 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 def change_colors():
+    time.sleep(1.4)
     # Green (Imagined Speech)
     screen.fill("green")
     draw_board()
@@ -386,6 +387,7 @@ while run:
 
     if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
         change_colors()
+        
         # Movement
         pyautogui.keyUp(current_command)
         current_command = commands_list.pop(0)
