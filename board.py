@@ -346,8 +346,8 @@ path_1 = [
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
-start_1= [10, 35, 2]
-start_2 = [16, 35, 2]
+start_2= [10, 35, 2]
+start_1 = [16, 35, 2]
 
 boards = [path_2, maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board]
 start_positions=[start_2, start_F, start_E, start_D, start_C, start_B, start_A, start_original_board]
