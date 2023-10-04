@@ -6,6 +6,7 @@ import math
 import time
 import pyautogui
 
+
 # import pylsl
 
 # LSL COMMUNICATION
@@ -19,8 +20,8 @@ import pyautogui
 # GAME
 pygame.init()
 ## Dimensions
-WIDTH = 900  # The whole board expands, but the measures like the initial position changes too.
-HEIGHT = 900  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
+WIDTH = 800  # The whole board expands, but the measures like the initial position changes too.
+HEIGHT = 800  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
 level = copy.deepcopy(boards_paradigm_SI.pop(0))
 div_width = len(level[0])  # 33
 div_height = len(level)  # 33
@@ -31,6 +32,7 @@ commands_list = commands_list_board.pop(0)
  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN, 4-STOP
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
+# tiny_screen = pygame.display.set_mode([300,300])
 timer = pygame.time.Clock()
 fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font("freesansbold.ttf", 20)
@@ -294,7 +296,8 @@ def check_position(centerx, centery):
 
 def move_player(play_x, play_y):
     # r, l, u, d
-    if direction == 0 and turns_allowed[0]:
+    # If current direction is right and right is allowed, move right
+    if direction == 0 and turns_allowed[0]: 
         play_x += player_speed
     elif direction == 1 and turns_allowed[1]:
         play_x -= player_speed
@@ -304,12 +307,32 @@ def move_player(play_x, play_y):
         play_y += player_speed
     return play_x, play_y
 
+def change_colors():
+    time.sleep(1.4)
+    # Green (Imagined Speech)
+    screen.fill("green")
+    draw_board()
+    draw_misc()
+    draw_player(last_direction)
+    pygame.display.flip()
+    time.sleep(1.4)
+
+    # Purple (Auditory Speech)
+    screen.fill("violet")
+    draw_board()
+    draw_misc()
+    draw_player(last_direction)
+    pygame.display.flip()
+    time.sleep(1.4)
+        
+    
 
 # Commands
 current_command = commands_list.pop(0)
 goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 run = True
+first_movement = True
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -330,6 +353,10 @@ while run:
         startup_counter += 1
     else:
         moving = True
+
+    if moving and first_movement:
+       change_colors()
+       first_movement = False
 
     screen.fill("black")
     draw_board()
@@ -358,12 +385,15 @@ while run:
     print(f"player_y = {player_y}")
 
     if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
-        time.sleep(3)
+        change_colors()
+        
+        # Movement
         pyautogui.keyUp(current_command)
         current_command = commands_list.pop(0)
         pyautogui.keyDown(current_command)
         print(current_command)
-        goal_x, goal_y = command_leader(current_command, player_y, player_x)
+        goal_x, goal_y = command_leader(current_command, player_y, player_x) 
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
