@@ -1,6 +1,6 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
-from board import boards_paradigm_SI, start_positions_paradigm_SI
+from board import boards_paradigm_SI, start_positions_paradigm_SI, commands_list_board
 import pygame
 import math
 import time
@@ -18,7 +18,6 @@ import pyautogui
 
 # GAME
 pygame.init()
-commands_list_board=[['up','left','left','right','right','up','left', 'left', 'up', 'up'],['up','left','left','right','right','up','left', 'left', 'up']]
 ## Dimensions
 WIDTH = 900  # The whole board expands, but the measures like the initial position changes too.
 HEIGHT = 900  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk

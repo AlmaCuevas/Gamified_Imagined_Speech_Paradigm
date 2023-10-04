@@ -266,7 +266,7 @@ maze_F = [
 [0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
 
-path_1 = [
+path_2 = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,4,5,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,3,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -306,7 +306,7 @@ path_1 = [
 [3,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
-path_2 = [
+path_1 = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,6,4,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,3,1,1,1,1,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -353,9 +353,9 @@ boards = [path_2, maze_F, maze_E, maze_D, maze_C, maze_B, maze_A, original_board
 start_positions=[start_2, start_F, start_E, start_D, start_C, start_B, start_A, start_original_board]
 
 
-path_commands_1 = ['up', 'left', 'down', 'left', 'right', 'down', 'right', 'down', 'right', 'up', 'down', 'left', 'up', 'up', 'right', 'up', 'right', 'down', 'right', 'down', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'down', 'left', 'right', 'up', 'up', 'down', 'right', 'down', 'up', 'down', 'left', 'right', 'up', 'left', 'up', 'down', 'left', 'left']
-path_commands_2 = ['up', 'left', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'left', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right', 'left', 'up', 'down', 'left', 'right', 'up', 'down', 'right']
-path_commands_3 = ['up', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'right', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'up', 'right', 'left', 'down', 'up', 'left', 'right', 'down', 'right']
-boards_paradigm_SI=[path_2, path_1]
-start_positions_paradigm_SI=[start_2, start_1]
-commands_list_board =[path_commands_2, path_commands_1, path_commands_3]
+path_commands_1 = ['up', 'left', 'right', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'right', 'up', 'up', 'up', 'right', 'right', 'down', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'up', 'left', 'right', 'up', 'right', 'right', 'right', 'left', 'up', 'down', 'down', 'up', 'left', 'up', 'up', 'left', 'left', 'right', 'up', 'left']
+path_commands_2 = ['up', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up']
+path_commands_3 = ['up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'up']
+boards_paradigm_SI=[path_1, path_2]
+start_positions_paradigm_SI=[start_1, start_2]
+commands_list_board =[path_commands_1, path_commands_2, path_commands_3]
