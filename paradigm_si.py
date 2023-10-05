@@ -216,13 +216,13 @@ def draw_board():
                     (j * num2 + num2, i * num1 + (0.5 * num1)),
                     3,
                 )
-            if i == 32 and j == 9 and current_level == 0:
+            if i == 32 and j == 11 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("1", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 23 and current_level == 1:
+            if i == 29 and j == 21 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("2", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
@@ -234,130 +234,196 @@ def draw_board():
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 4 and current_level == 0:
+            if i == 29 and j == 8 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("4", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 25 and j == 21 and current_level == 0:
+            if i == 25 and j == 19 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("5", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 20 and j == 28 and current_level == 0:
+            if i == 20 and j == 24 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("6", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 17 and j == 4 and current_level == 0:
+            if i == 17 and j == 8 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("7", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 14 and j == 4 and current_level == 0:
+            if i == 14 and j == 8 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("8", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 11 and j == 28 and current_level == 0:
+            if i == 11 and j == 24 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("9", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 21 and current_level == 0:
+            if i == 5 and j == 19 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("10", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 16 and j == 21 and current_level == 0:
+            if i == 16 and j == 19 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("11", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 4 and current_level == 0:
+            if i == 5 and j == 7 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("12", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 2 and j == 4 and current_level == 0:
+            if i == 2 and j == 7 and current_level == 0:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("13", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-
-
-            if i == 32 and j == 4 and current_level == 1:
+#path 2
+###
+            if i == 32 and j == 6 and current_level == 1:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("1", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 26 and j == 4 and current_level == 1:
+            if i == 26 and j == 6 and current_level == 1:
                     font = pygame.font.Font("freesansbold.ttf", 30)
                     number_text = font.render("3", True, "white")
                     cell_x = j * num2 + (0.5 * num2) - 10
                     cell_y = i * num1 + (0.5 * num1) - 10
                     screen.blit(number_text, (cell_x, cell_y))
-            if i == 20 and j == 4 and current_level == 1:
+            if i == 20 and j == 6 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("5", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 14 and j == 4 and current_level == 1:
+            if i == 14 and j == 6 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("6", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 8 and j == 4 and current_level == 1:
+            if i == 8 and j == 6 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("8", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 23 and current_level == 1:
+            if i == 29 and j == 19 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("2", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 23 and j == 23 and current_level == 1:
+            if i == 23 and j == 19 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("4", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 11 and j == 23 and current_level == 1:
+            if i == 11 and j == 19 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("7", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 23 and current_level == 1:
+            if i == 5 and j == 19 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("9", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-            if i == 2 and j == 18 and current_level == 1:
+            if i == 2 and j == 16 and current_level == 1:
                 font = pygame.font.Font("freesansbold.ttf", 30)
                 number_text = font.render("10", True, "white")
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
 
-
+#path 3
+            if i == 34 and j == 14 and current_level == 2:
+                    font = pygame.font.Font("freesansbold.ttf", 30)
+                    number_text = font.render("1", True, "white")
+                    cell_x = j * num2 + (0.5 * num2) - 10
+                    cell_y = i * num1 + (0.5 * num1) - 10
+                    screen.blit(number_text, (cell_x, cell_y))
+            if i == 29 and j == 8 and current_level == 2:
+                    font = pygame.font.Font("freesansbold.ttf", 30)
+                    number_text = font.render("3", True, "white")
+                    cell_x = j * num2 + (0.5 * num2) - 10
+                    cell_y = i * num1 + (0.5 * num1) - 10
+                    screen.blit(number_text, (cell_x, cell_y))
+            if i == 23 and j == 8 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("5", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 17 and j == 8 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("6", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 11 and j == 8 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("8", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 32 and j == 21 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("2", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 26 and j == 21 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("4", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 14 and j == 21 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("7", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 8 and j == 21 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("9", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 5 and j == 7 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("10", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
+            if i == 2 and j == 15 and current_level == 2:
+                font = pygame.font.Font("freesansbold.ttf", 30)
+                number_text = font.render("11", True, "white")
+                cell_x = j * num2 + (0.5 * num2) - 10
+                cell_y = i * num1 + (0.5 * num1) - 10
+                screen.blit(number_text, (cell_x, cell_y))
 def draw_player(angle):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
     if direction == 0:
@@ -517,7 +583,7 @@ while run:
                 power_counter = 0
                 lives -= 1
                 startup_counter = 0
-                current_level = 1
+                current_level = current_level+1
                 if current_level < len(boards_paradigm_SI):
                     level = copy.deepcopy(boards_paradigm_SI[current_level])
                 start = start_positions_paradigm_SI.pop(0)
