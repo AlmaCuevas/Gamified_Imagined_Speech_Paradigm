@@ -446,7 +446,7 @@ def draw_board():
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-def draw_player(angle):
+def draw_player(last_direction):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
     for direction_idx in range(0,4):
         if direction_idx == direction:
