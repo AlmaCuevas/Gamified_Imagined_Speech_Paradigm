@@ -451,26 +451,6 @@ def draw_board():
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-    pygame.draw.circle(
-                    screen,
-                    "red",
-                    (player_x,player_y),
-                    5,
-                )
-    pygame.draw.circle(
-                    screen,
-                    "yellow",
-                    (int(player_x + image_xscale//2),int(player_y + image_yscale//2)),
-                    4,
-                )
-    for i in range(0,div_width):
-        for j in range(0,div_height):
-            pygame.draw.circle(
-                            screen,
-                            "blue",
-                            (i*num2,j*num1),
-                            4,
-                        )
     
 def draw_player(last_direction):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
@@ -544,7 +524,6 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 def change_colors():
-    # time.sleep(1.4)
     # Green (Imagined Speech)
     screen.fill("green")
     draw_board()
@@ -612,9 +591,9 @@ while run:
     # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-    # score, powerup, power_counter, last_activate_turn_tile = check_collisions(
-    #     score, powerup, power_counter, last_activate_turn_tile
-    # )
+    score, powerup, power_counter, last_activate_turn_tile = check_collisions(
+        score, powerup, power_counter, last_activate_turn_tile
+    )
 
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
