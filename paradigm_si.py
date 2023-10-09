@@ -23,8 +23,8 @@ current_level = 0  # Inicialmente, el nivel 0 está en juego
 level = copy.deepcopy(boards_paradigm_SI[current_level])
 ## Dimensions
 
-WIDTH = 820  # The whole board expands, but the measures like the initial position changes too.
-HEIGHT = 700  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
+WIDTH = 800  # The whole board expands, but the measures like the initial position changes too.
+HEIGHT = 800  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
 
 level = copy.deepcopy(boards_paradigm_SI.pop(0))
 div_width = len(level[0])  # 33
@@ -46,12 +46,10 @@ PI = math.pi
 
 ## Images import
 player_images = []
-for i in range(1, 5):
-    player_images.append(
-        pygame.transform.scale(
-            pygame.image.load(f"assets/player_images/{i}.png"), (30, 30)
-        )
-    )
+player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (40, 40)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (40, 40))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN 
 arrow = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow.png"), (30, 30)
 )
