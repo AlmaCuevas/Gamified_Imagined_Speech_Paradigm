@@ -266,7 +266,7 @@ maze_F = [
 [0,0,0,7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
 
-path_1 = [
+path_2 = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,6,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,3,1,1,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -346,6 +346,7 @@ path_2 = [
 [3,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
+
 path_3=[
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,0,0,0,6,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -386,6 +387,7 @@ path_3=[
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
+
 start_1= [16, 35, 2]
 start_2 = [11, 35, 2]
 start_3 = [16, 35, 2]
@@ -395,3 +397,7 @@ start_positions=[start_2, start_1, start_3,start_F, start_E, start_D, start_C, s
 
 boards_paradigm_SI=[path_1, path_2,path_3]
 start_positions_paradigm_SI=[start_1, start_2,start_3]
+path_commands_1 = ['up', 'left', 'right', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'right', 'up', 'up', 'up', 'right', 'right', 'down', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'up', 'left', 'right', 'up', 'right', 'right', 'right', 'left', 'up', 'down', 'down', 'up', 'left', 'up', 'up', 'left', 'left', 'right', 'up', 'left']
+path_commands_2 = ['up', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up']
+path_commands_3 = ['up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'up']
+commands_list_board =[path_commands_1, path_commands_2, path_commands_3]
