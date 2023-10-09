@@ -21,22 +21,23 @@ import pyautogui
 pygame.init()
 current_level = 0  # Inicialmente, el nivel 0 está en juego
 level = copy.deepcopy(boards_paradigm_SI[current_level])
-## Dimensions
 
-WIDTH = 800  # The whole board expands, but the measures like the initial position changes too.
-HEIGHT = 800  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
+# Dimensions
+display_info = pygame.display.Info() # Get the monitor's display info
+WIDTH = int(display_info.current_h)
+HEIGHT = int(display_info.current_h)
 
 level = copy.deepcopy(boards_paradigm_SI.pop(0))
-div_width = len(level[0])  # 33
-div_height = len(level)  # 33
+div_width = len(level[0])  # 31
+div_height = len(level)  # 38
 num1 = HEIGHT // div_height #23
 num2 = WIDTH // div_width #29
+
 
 commands_list = commands_list_board.pop(0)
  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN, 4-STOP
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
-# tiny_screen = pygame.display.set_mode([300,300])
 timer = pygame.time.Clock()
 fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font("freesansbold.ttf", 20)
@@ -45,11 +46,15 @@ PI = math.pi
 
 
 ## Images import
+image_xscale = num2
+image_yscale = num1
+
+
 player_images = []
-player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (40, 40)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (40, 40)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (40, 40)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (40, 40))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN 
+player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (image_xscale, image_yscale)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (image_xscale, image_yscale)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (image_xscale, image_yscale)),
+                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (image_xscale, image_yscale))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN 
 arrow = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow.png"), (30, 30)
 )
@@ -73,8 +78,8 @@ arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 
 ## Positions
 start = start_positions_paradigm_SI.pop(0)
-player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
-player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
+player_x = int(start[0] * num2)
+player_y = int(start[1]* num1)
 direction = start[2]
 last_direction = start[2]
 
@@ -128,9 +133,9 @@ def command_leader(current_command, player_y, player_x):
     goal_x=player_x
     goal_y=player_y
     if current_command == 'right':  # Right
-        goal_x = player_x + num2 * 2 + num2/2
+        goal_x = player_x + num2 * 3
     elif current_command == 'left':  # Left
-        goal_x = player_x - num2 * 2 - num2/2
+        goal_x = player_x - num2 * 3
     elif current_command == 'up':  # Up
         goal_y = player_y - num1 * 3
     elif current_command == 'down':  # Down
@@ -446,7 +451,28 @@ def draw_board():
                 cell_x = j * num2 + (0.5 * num2) - 10
                 cell_y = i * num1 + (0.5 * num1) - 10
                 screen.blit(number_text, (cell_x, cell_y))
-def draw_player(angle):
+    pygame.draw.circle(
+                    screen,
+                    "red",
+                    (player_x,player_y),
+                    5,
+                )
+    pygame.draw.circle(
+                    screen,
+                    "yellow",
+                    (int(player_x + image_xscale//2),int(player_y + image_yscale//2)),
+                    4,
+                )
+    for i in range(0,div_width):
+        for j in range(0,div_height):
+            pygame.draw.circle(
+                            screen,
+                            "blue",
+                            (i*num2,j*num1),
+                            4,
+                        )
+    
+def draw_player(last_direction):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
     for direction_idx in range(0,4):
         if direction_idx == direction:
@@ -518,7 +544,7 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 def change_colors():
-    time.sleep(1.4)
+    # time.sleep(1.4)
     # Green (Imagined Speech)
     screen.fill("green")
     draw_board()
@@ -570,8 +596,8 @@ while run:
 
     screen.fill("black")
     draw_board()
-    center_x = player_x + 23
-    center_y = player_y + 24
+    center_x = int(player_x + image_xscale//2)
+    center_y = int(player_y + image_yscale//2)
 
     game_won = True
     for i in range(len(level)):
@@ -580,21 +606,18 @@ while run:
     last_direction = draw_player(last_direction)
 
     draw_misc()
+    turns_allowed = [True,True,True,True]
+    # turns_allowed = check_position(center_x, center_y)
 
-    turns_allowed = check_position(center_x, center_y)
     # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-    score, powerup, power_counter, last_activate_turn_tile = check_collisions(
-        score, powerup, power_counter, last_activate_turn_tile
-    )
-    # add to if not powerup to check if eaten ghosts
-    print(f"goal_x = {goal_x}")
-    print(f"player_x = {player_x}")
-    print(f"goal_y = {goal_y}")
-    print(f"player_y = {player_y}")
+    # score, powerup, power_counter, last_activate_turn_tile = check_collisions(
+    #     score, powerup, power_counter, last_activate_turn_tile
+    # )
 
-    if math.isclose(goal_x, player_x, abs_tol = 3) and math.isclose(goal_y, player_y, abs_tol = 3):
+
+    if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
         change_colors()
         
         # Movement
