@@ -20,14 +20,13 @@ mrkstream_allowed_turn_out = lsl_mrk_outlet('PyGame - Paradgima Experimental') #
 # GAME
 pygame.init()
 current_level = 0  # Inicialmente, el nivel 0 está en juego
-level = copy.deepcopy(boards_paradigm_SI[current_level])
 
 # Dimensions
 display_info = pygame.display.Info() # Get the monitor's display info
 WIDTH = int(display_info.current_h)
 HEIGHT = int(display_info.current_h)
 
-level = copy.deepcopy(boards_paradigm_SI.pop(0))
+level = copy.deepcopy(boards_paradigm_SI[current_level])
 div_width = len(level[0])  # 31
 div_height = len(level)  # 38
 num1 = HEIGHT // div_height #23
@@ -599,13 +598,15 @@ while run:
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
         change_colors()
-        
+
         # Movement
         pyautogui.keyUp(current_command)
-        current_command = commands_list.pop(0)
+        if len(commands_list) > 0:
+            current_command = commands_list.pop(0)
+        else:
+            current_command = 'None'
         pyautogui.keyDown(current_command)
-        print(current_command)
-        goal_x, goal_y = command_leader(current_command, player_y, player_x) 
+        goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 
     for event in pygame.event.get():
@@ -627,9 +628,6 @@ while run:
                 power_counter = 0
                 lives -= 1
                 startup_counter = 0
-                current_level = current_level+1
-                if current_level < len(boards_paradigm_SI):
-                    level = copy.deepcopy(boards_paradigm_SI[current_level])
                 start = start_positions_paradigm_SI.pop(0)
                 player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
                 player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
@@ -637,12 +635,14 @@ while run:
                 direction_command = start[2]
                 score = 0
                 lives = 3
-                level = copy.deepcopy(boards_paradigm_SI.pop(0))
+                current_level += 1
+                if current_level < len(boards_paradigm_SI):
+                    level = copy.deepcopy(boards_paradigm_SI[current_level])
                 game_over = False
                 game_won = False
                 commands_list = commands_list_board.pop(0)
                 current_command = commands_list.pop(0)
-                goal_x, goal_y, player_y, player_x = command_leader(current_command, player_y, player_x)
+                goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE and direction_command == 4:
