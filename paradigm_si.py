@@ -658,17 +658,17 @@ while run:
 
     for direction_index in range(0, 4):
         if direction_command == direction_index:
-            screen.blit(
-                arrow_images[direction_index],
-                (arrow_x[direction_index], arrow_y[direction_index]),
-            )
+            # screen.blit(
+            #     arrow_images[direction_index],
+            #     (arrow_x[direction_index], arrow_y[direction_index]),
+            # )
             if turns_allowed[direction_index]:
                 direction = direction_index
-        else:
-            screen.blit(
-                arrow_transparent_images[direction_index],
-                (arrow_x[direction_index], arrow_y[direction_index]),
-            )
+        # else:
+        #     screen.blit(
+        #         arrow_transparent_images[direction_index],
+        #         (arrow_x[direction_index], arrow_y[direction_index]),
+        #     )
     if direction_command == 4:
         direction = 4
     pygame.display.flip()
