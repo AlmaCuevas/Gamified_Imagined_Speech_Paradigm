@@ -324,17 +324,30 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 def change_colors(): 
-    if len(commands_list)> 1:
-        if commands_list[0] == 'right':  # Right
-            screen.blit(arrow_images[0],(player_x+num2, player_y))    
-        elif commands_list[0] == 'left':  # Left
-            screen.blit(arrow_images[1],(player_x-num2, player_y))    
-        elif commands_list[0] == 'up':  # Up
-            screen.blit(arrow_images[2],(player_x, player_y-num1)) 
-        elif commands_list[0] == 'down':  # Down
-            screen.blit(arrow_images[3],(player_x, player_y+num1))
-        pygame.display.flip()
 
+    if len(commands_list)> 1:
+        if first_movement==True:
+            said_command = current_command
+            if current_command == 'right':  # Right
+                screen.blit(arrow_images[0],(player_x+num2, player_y))    
+            elif current_command == 'left':  # Left
+                screen.blit(arrow_images[1],(player_x-num2, player_y))    
+            elif current_command == 'up':  # Up
+                screen.blit(arrow_images[2],(player_x, player_y-num1)) 
+            elif current_command == 'down':  # Down
+                screen.blit(arrow_images[3],(player_x, player_y+num1))
+        else:
+            said_command = commands_list[0]
+            if commands_list[0] == 'right':  # Right
+                screen.blit(arrow_images[0],(player_x+num2, player_y))    
+            elif commands_list[0] == 'left':  # Left
+                screen.blit(arrow_images[1],(player_x-num2, player_y))    
+            elif commands_list[0] == 'up':  # Up
+                screen.blit(arrow_images[2],(player_x, player_y-num1)) 
+            elif commands_list[0] == 'down':  # Down
+                screen.blit(arrow_images[3],(player_x, player_y+num1))
+        
+        pygame.display.flip()
         print(last_direction)
         print(commands_list[0])    
         time.sleep(1.4)
@@ -344,7 +357,7 @@ def change_colors():
         draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
-        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(current_command)]))
+        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(said_command)]))
         time.sleep(1.4)
 
         # Purple (Auditory Speech)
@@ -353,7 +366,7 @@ def change_colors():
         draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
-        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +current_command)]))
+        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
         time.sleep(1.4)
         
     
