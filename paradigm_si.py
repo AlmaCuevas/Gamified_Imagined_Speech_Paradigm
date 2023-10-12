@@ -368,6 +368,9 @@ def change_colors(color):
         pygame.display.flip()
         mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
         time.sleep(1.4)
+        color = "white"
+        draw_board(color)
+
         return color
         
     
