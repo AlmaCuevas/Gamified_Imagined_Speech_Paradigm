@@ -445,8 +445,8 @@ while run:
                 lives -= 1
                 startup_counter = 0
                 start = start_positions_paradigm_SI.pop(0)
-                player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
-                player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
+                player_x = int(start[0] * num2)
+                player_y = int(start[1]* num1)
                 direction = start[2]
                 direction_command = start[2]
                 score = 0
