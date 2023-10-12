@@ -1,40 +1,29 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
-from board import boards_paradigm_SI, start_positions_paradigm_SI, commands_list_board
+from board import boards, start_positions
 import pygame
 import math
-import time
-import pyautogui
 
-
-import pylsl
+# import pylsl
 
 # LSL COMMUNICATION
-def lsl_mrk_outlet(name):
-   info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
-   outlet = pylsl.stream_outlet(info, 1, 1)
-   print('pacman created result outlet.')
-   return outlet
-mrkstream_allowed_turn_out = lsl_mrk_outlet('PyGame - Paradgima Experimental') # important this is first
+# def lsl_mrk_outlet(name):
+#    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
+#    outlet = pylsl.stream_outlet(info, 1, 1)
+#    print('pacman created result outlet.')
+#    return outlet
+# mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers') # important this is first
 
 # GAME
 pygame.init()
-current_level = 0  # Inicialmente, el nivel 0 está en juego
-
-# Dimensions
-display_info = pygame.display.Info() # Get the monitor's display info
-WIDTH = int(display_info.current_h)
-HEIGHT = int(display_info.current_h)
-
-level = copy.deepcopy(boards_paradigm_SI[current_level])
-div_width = len(level[0])  # 31
-div_height = len(level)  # 38
-num1 = HEIGHT // div_height #23
-num2 = WIDTH // div_width #29
-
-
-commands_list = commands_list_board.pop(0)
- # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN, 4-STOP
+## Dimensions
+WIDTH = 900  # The whole board expands, but the measures like the initial position changes too.
+HEIGHT = 900  # All sizes change when you change this. If you try to make this bigger, usually no prob. But smaller will just led to too big pacman that can't walk
+level = copy.deepcopy(boards.pop(0))
+div_width = len(level[0])  # 33
+div_height = len(level)  # 33
+num1 = HEIGHT // div_height
+num2 = WIDTH // div_width
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
@@ -43,19 +32,16 @@ font = pygame.font.Font("freesansbold.ttf", 20)
 color = "blue"
 PI = math.pi
 
-
 ## Images import
-image_xscale = num2
-image_yscale = num1
-
-
 player_images = []
-player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (image_xscale, image_yscale)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (image_xscale, image_yscale)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (image_xscale, image_yscale)),
-                 pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (image_xscale, image_yscale))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN 
+for i in range(1, 5):
+    player_images.append(
+        pygame.transform.scale(
+            pygame.image.load(f"assets/player_images/{i}.png"), (40, 40)
+        )
+    )
 arrow = pygame.transform.scale(
-    pygame.image.load(f"assets/extras_images/arrow.png"), (image_xscale, image_yscale)
+    pygame.image.load(f"assets/extras_images/arrow.png"), (30, 30)
 )
 arrow_transparent = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow_transparent.png"), (30, 30)
@@ -74,21 +60,17 @@ arrow_transparent_images = [
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_x = [65, 5, 35, 35]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-cookie = pygame.transform.scale(pygame.image.load(f'assets/extras_images/cookie.png'), (image_xscale, image_yscale))
 
-## Positions
-start = start_positions_paradigm_SI.pop(0)
-player_x = int(start[0] * num2)
-player_y = int(start[1]* num1)
+## Positions and other
+start = start_positions.pop(0)
+player_x = num2 * start[0] - int(num2 / 2) + 2  # 450
+player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
 direction = start[2]
-last_direction = start[2]
-
-#Other
 counter = 0
 flicker = False
 turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-direction_command = start[2]
-player_speed = 1
+direction_command = 0
+player_speed = 2
 score = 0
 powerup = False
 power_counter = 0
@@ -104,6 +86,7 @@ lives = 3
 game_over = False
 game_won = False
 last_activate_turn_tile = [1, 1]
+
 
 def draw_misc():
     score_text = font.render(f"Score: {score}", True, "white")
@@ -129,22 +112,25 @@ def draw_misc():
         screen.blit(gameover_text, (400, 270))
         screen.blit(gameover_text2, (350, 370))
 
-def command_leader(current_command, player_y, player_x):
-    goal_x=player_x
-    goal_y=player_y
-    if current_command == 'right':  # Right
-        goal_x = player_x + num2 * 3
-    elif current_command == 'left':  # Left
-        goal_x = player_x - num2 * 3
-    elif current_command == 'up':  # Up
-        goal_y = player_y - num1 * 3
-    elif current_command == 'down':  # Down
-        goal_y = player_y + num1 * 3
-    return goal_x, goal_y
 
 def check_collisions(scor, power, power_count, last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
     if 0 < player_x < 870:
+        for mod in mods:
+            for mod_2 in mods:
+                if level[(center_y + mod) // num1][(center_x + mod_2) // num2] in [
+                    5,
+                    6,
+                    7,
+                    8,
+                ] and level[(center_y - mod) // num1][(center_x - mod_2) // num2] in [
+                    5,
+                    6,
+                    7,
+                    8,
+                ]:  # arc numbers
+                    level[center_y // num1][center_x // num2] = -1
+                    last_activate_turn_tile = [center_y // num1, center_x // num2]
         if level[center_y // num1][center_x // num2] == 1:
             level[center_y // num1][center_x // num2] = 0
             scor += 10
@@ -166,14 +152,13 @@ def draw_board():
                     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
                     4,
                 )
-            if level[i][j] == 2:
-                screen.blit(cookie, (j * num2, i * num1))
-                # pygame.draw.circle(
-                #     screen,
-                #     "white",
-                #     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
-                #     10,
-                # )
+            if level[i][j] == 2 and not flicker:
+                pygame.draw.circle(
+                    screen,
+                    "white",
+                    (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
+                    10,
+                )
             if level[i][j] == 3:
                 pygame.draw.line(
                     screen,
@@ -244,227 +229,39 @@ def draw_board():
                     (j * num2 + num2, i * num1 + (0.5 * num1)),
                     3,
                 )
-            if i == 32 and j == 11 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("1", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 21 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("2", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 23 and j == 16 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("3", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 8 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("4", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 25 and j == 19 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("5", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 20 and j == 24 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("6", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 17 and j == 8 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("7", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 14 and j == 8 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("8", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 11 and j == 24 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("9", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 19 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("10", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 16 and j == 19 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("11", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 7 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("12", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 2 and j == 7 and current_level == 0:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("13", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-#path 2
-###
-            if i == 32 and j == 6 and current_level == 1:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("1", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 26 and j == 6 and current_level == 1:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("3", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 20 and j == 6 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("5", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 14 and j == 6 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("6", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 8 and j == 6 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("8", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 19 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("2", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 23 and j == 19 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("4", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 11 and j == 19 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("7", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 19 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("9", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 2 and j == 16 and current_level == 1:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("10", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
+            if level[i][j] == -1:
+                pygame.draw.rect(
+                    screen,
+                    "yellow",
+                    [j * num2 + (-0.5 * num2), i * num1 + (-0.5 * num1), 60, 60],
+                    border_radius=10,
+                )
 
-#path 3
-            if i == 34 and j == 14 and current_level == 2:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("1", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 29 and j == 8 and current_level == 2:
-                    font = pygame.font.Font("freesansbold.ttf", 30)
-                    number_text = font.render("3", True, "white")
-                    cell_x = j * num2 + (0.5 * num2) - 10
-                    cell_y = i * num1 + (0.5 * num1) - 10
-                    screen.blit(number_text, (cell_x, cell_y))
-            if i == 23 and j == 8 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("5", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 17 and j == 8 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("6", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 11 and j == 8 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("8", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 32 and j == 21 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("2", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 26 and j == 21 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("4", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 14 and j == 21 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("7", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 8 and j == 21 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("9", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 5 and j == 7 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("10", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-            if i == 2 and j == 15 and current_level == 2:
-                font = pygame.font.Font("freesansbold.ttf", 30)
-                number_text = font.render("11", True, "white")
-                cell_x = j * num2 + (0.5 * num2) - 10
-                cell_y = i * num1 + (0.5 * num1) - 10
-                screen.blit(number_text, (cell_x, cell_y))
-def draw_player(last_direction):
+
+def draw_player():
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-    for direction_idx in range(0,4):
-        if direction_idx == direction:
-            last_direction=direction
-            screen.blit(player_images[direction], (player_x, player_y))
-    if direction == 4:
-        screen.blit(player_images[last_direction], (player_x, player_y))
-    return last_direction
+    if direction == 0:
+        screen.blit(player_images[counter // 5], (player_x, player_y))
+    elif direction == 1:
+        screen.blit(
+            pygame.transform.flip(player_images[counter // 5], True, False),
+            (player_x, player_y),
+        )
+    elif direction == 2:
+        screen.blit(
+            pygame.transform.rotate(player_images[counter // 5], 90),
+            (player_x, player_y),
+        )
+    elif direction == 3:
+        screen.blit(
+            pygame.transform.rotate(player_images[counter // 5], 270),
+            (player_x, player_y),
+        )
+
 
 def check_position(centerx, centery):
     turns = [False, False, False, False]
-    num3 = 5
+    num3 = 15
     # check collisions based on center x and center y of player +/- fudge number
     if centerx // 30 < 29:
         if direction == 0:
@@ -502,18 +299,16 @@ def check_position(centerx, centery):
                     turns[1] = True
                 if level[centery // num1][(centerx + num3) // num2] < 3:
                     turns[0] = True
-        if direction == 4:
-            turns = [True, True, True, True]
     else:
-        turns = [True, True, True, True]
+        turns[0] = True
+        turns[1] = True
 
     return turns
 
 
 def move_player(play_x, play_y):
     # r, l, u, d
-    # If current direction is right and right is allowed, move right
-    if direction == 0 and turns_allowed[0]: 
+    if direction == 0 and turns_allowed[0]:
         play_x += player_speed
     elif direction == 1 and turns_allowed[1]:
         play_x -= player_speed
@@ -523,48 +318,8 @@ def move_player(play_x, play_y):
         play_y += player_speed
     return play_x, play_y
 
-def change_colors(): 
-    # if commands_list[1]==2:
-    #      print("Hola")
-    if commands_list[0] == 'right':  # Right
-        screen.blit(arrow_images[0],(player_x+num2, player_y))    
-    elif commands_list[0] == 'left':  # Left
-        screen.blit(arrow_images[1],(player_x-num2, player_y))    
-    elif commands_list[0] == 'up':  # Up
-        screen.blit(arrow_images[2],(player_x, player_y-num1)) 
-    elif commands_list[0] == 'down':  # Down
-        screen.blit(arrow_images[3],(player_x, player_y+num1))
-    pygame.display.flip()
-
-    print(last_direction)
-    print(commands_list[0])    
-    time.sleep(1.4)
-    # Green (Imagined Speech)
-    screen.fill("green")
-    draw_board()
-    draw_misc()
-    draw_player(last_direction)
-    pygame.display.flip()
-    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(current_command)]))
-    time.sleep(1.4)
-
-    # Purple (Auditory Speech)
-    screen.fill("violet")
-    draw_board()
-    draw_misc()
-    draw_player(last_direction)
-    pygame.display.flip()
-    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +current_command)]))
-    time.sleep(1.4)
-        
-    
-
-# Commands
-current_command = commands_list.pop(0)
-goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 run = True
-first_movement = True
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -580,57 +335,44 @@ while run:
         power_counter = 0
         powerup = False
         eaten_ghost = [False, False, False, False]
-    if startup_counter < fps*5 and not game_over and not game_won:
+    if startup_counter < 180 and not game_over and not game_won:
         moving = False
         startup_counter += 1
     else:
         moving = True
 
-    if moving and first_movement:
-       change_colors()
-       first_movement = False
-
     screen.fill("black")
     draw_board()
-    center_x = int(player_x + image_xscale//2)
-    center_y = int(player_y + image_yscale//2)
+    center_x = player_x + 23
+    center_y = player_y + 24
 
     game_won = True
     for i in range(len(level)):
         if 1 in level[i] or 2 in level[i]:
             game_won = False
-    last_direction = draw_player(last_direction)
+    mods = [25, -25]
+    # Collider viewer
+    # player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y+mods[0]), 20, 10)
+    # player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[0], center_y+mods[1]), 20, 10)
+    # player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[0]), 20, 10)
+    # player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[1]), 20, 10)
+    draw_player()
 
     draw_misc()
-    turns_allowed = [True,True,True,True]
-    # turns_allowed = check_position(center_x, center_y)
 
+    turns_allowed = check_position(center_x, center_y)
+    # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
     score, powerup, power_counter, last_activate_turn_tile = check_collisions(
         score, powerup, power_counter, last_activate_turn_tile
     )
-
-
-    if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
-        change_colors()
-
-        # Movement
-        pyautogui.keyUp(current_command)
-        if len(commands_list) > 0:
-            current_command = commands_list.pop(0)
-        else:
-            current_command = 'None'
-        pyautogui.keyDown(current_command)
-        goal_x, goal_y = command_leader(current_command, player_y, player_x)
-
+    # add to if not powerup to check if eaten ghosts
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                direction_command = 4
             if event.key == pygame.K_RIGHT:
                 direction_command = 0
             if event.key == pygame.K_LEFT:
@@ -644,25 +386,18 @@ while run:
                 power_counter = 0
                 lives -= 1
                 startup_counter = 0
-                start = start_positions_paradigm_SI.pop(0)
-                player_x = num2 * start[0] - int(num2 / 2) + 3  # 450
+                start = start_positions.pop(0)
+                player_x = num2 * start[0] - int(num2 / 2) + 2  # 450
                 player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
                 direction = start[2]
-                direction_command = start[2]
+                direction_command = 0
                 score = 0
                 lives = 3
-                current_level += 1
-                if current_level < len(boards_paradigm_SI):
-                    level = copy.deepcopy(boards_paradigm_SI[current_level])
+                level = copy.deepcopy(boards.pop(0))
                 game_over = False
                 game_won = False
-                commands_list = commands_list_board.pop(0)
-                current_command = commands_list.pop(0)
-                goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE and direction_command == 4:
-                direction_command = direction
             if event.key == pygame.K_RIGHT and direction_command == 0:
                 direction_command = direction
             if event.key == pygame.K_LEFT and direction_command == 1:
@@ -674,19 +409,17 @@ while run:
 
     for direction_index in range(0, 4):
         if direction_command == direction_index:
-            # screen.blit(
-            #     arrow_images[direction_index],
-            #     (arrow_x[direction_index], arrow_y[direction_index]),
-            # )
+            screen.blit(
+                arrow_images[direction_index],
+                (arrow_x[direction_index], arrow_y[direction_index]),
+            )
             if turns_allowed[direction_index]:
                 direction = direction_index
-        # else:
-        #     screen.blit(
-        #         arrow_transparent_images[direction_index],
-        #         (arrow_x[direction_index], arrow_y[direction_index]),
-        #     )
-    if direction_command == 4:
-        direction = 4
+        else:
+            screen.blit(
+                arrow_transparent_images[direction_index],
+                (arrow_x[direction_index], arrow_y[direction_index]),
+            )
     pygame.display.flip()
 pygame.quit()
 
