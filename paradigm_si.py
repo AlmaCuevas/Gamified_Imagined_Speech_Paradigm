@@ -74,6 +74,7 @@ arrow_transparent_images = [
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_x = [65, 5, 35, 35]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+cookie = pygame.transform.scale(pygame.image.load(f'assets/extras_images/cookie.png'), (image_xscale, image_yscale))
 
 ## Positions
 start = start_positions_paradigm_SI.pop(0)
@@ -165,13 +166,14 @@ def draw_board():
                     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
                     4,
                 )
-            if level[i][j] == 2 and not flicker:
-                pygame.draw.circle(
-                    screen,
-                    "white",
-                    (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
-                    10,
-                )
+            if level[i][j] == 2:
+                screen.blit(cookie, (j * num2, i * num1))
+                # pygame.draw.circle(
+                #     screen,
+                #     "white",
+                #     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
+                #     10,
+                # )
             if level[i][j] == 3:
                 pygame.draw.line(
                     screen,
