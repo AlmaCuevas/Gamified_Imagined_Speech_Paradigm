@@ -325,7 +325,7 @@ def move_player(play_x, play_y):
 
 def change_colors(): 
 
-    if len(commands_list)> 1:
+    if len(commands_list)> 0:
         if first_movement==True:
             said_command = current_command
             if current_command == 'right':  # Right
