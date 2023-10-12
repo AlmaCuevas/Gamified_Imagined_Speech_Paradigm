@@ -122,12 +122,12 @@ def draw_misc():
         screen.blit(gameover_text, (400, 270))
         screen.blit(gameover_text2, (350, 370))
     if game_won:
-        pygame.draw.rect(screen, "green", [50, 200, 800, 300], 0, 10)
-        pygame.draw.rect(screen, "gray", [70, 220, 760, 260], 0, 10)
-        gameover_text = font.render("Victory!", True, "green")
-        gameover_text2 = font.render("Space bar to restart!", True, "red")
-        screen.blit(gameover_text, (400, 270))
-        screen.blit(gameover_text2, (350, 370))
+        pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
+        pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
+        gameover_text = font.render("Victory!", True, "red")
+        gameover_text2 = font.render("Prepare for the next level!", True, "red")
+        screen.blit(gameover_text, (WIDTH//2, HEIGHT//3))
+        screen.blit(gameover_text2, (WIDTH//3, HEIGHT//2))
 
 def command_leader(current_command, player_y, player_x):
     goal_x=player_x
@@ -324,38 +324,37 @@ def move_player(play_x, play_y):
     return play_x, play_y
 
 def change_colors(): 
-    # if commands_list[1]==2:
-    #      print("Hola")
-    if commands_list[0] == 'right':  # Right
-        screen.blit(arrow_images[0],(player_x+num2, player_y))    
-    elif commands_list[0] == 'left':  # Left
-        screen.blit(arrow_images[1],(player_x-num2, player_y))    
-    elif commands_list[0] == 'up':  # Up
-        screen.blit(arrow_images[2],(player_x, player_y-num1)) 
-    elif commands_list[0] == 'down':  # Down
-        screen.blit(arrow_images[3],(player_x, player_y+num1))
-    pygame.display.flip()
+    if len(commands_list)> 1:
+        if commands_list[0] == 'right':  # Right
+            screen.blit(arrow_images[0],(player_x+num2, player_y))    
+        elif commands_list[0] == 'left':  # Left
+            screen.blit(arrow_images[1],(player_x-num2, player_y))    
+        elif commands_list[0] == 'up':  # Up
+            screen.blit(arrow_images[2],(player_x, player_y-num1)) 
+        elif commands_list[0] == 'down':  # Down
+            screen.blit(arrow_images[3],(player_x, player_y+num1))
+        pygame.display.flip()
 
-    print(last_direction)
-    print(commands_list[0])    
-    time.sleep(1.4)
-    # Green (Imagined Speech)
-    screen.fill("green")
-    draw_board()
-    draw_misc()
-    draw_player(last_direction)
-    pygame.display.flip()
-    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(current_command)]))
-    time.sleep(1.4)
+        print(last_direction)
+        print(commands_list[0])    
+        time.sleep(1.4)
+        # Green (Imagined Speech)
+        screen.fill("green")
+        draw_board()
+        draw_misc()
+        draw_player(last_direction)
+        pygame.display.flip()
+        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(current_command)]))
+        time.sleep(1.4)
 
-    # Purple (Auditory Speech)
-    screen.fill("violet")
-    draw_board()
-    draw_misc()
-    draw_player(last_direction)
-    pygame.display.flip()
-    mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +current_command)]))
-    time.sleep(1.4)
+        # Purple (Auditory Speech)
+        screen.fill("violet")
+        draw_board()
+        draw_misc()
+        draw_player(last_direction)
+        pygame.display.flip()
+        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +current_command)]))
+        time.sleep(1.4)
         
     
 
@@ -390,20 +389,21 @@ while run:
        change_colors()
        first_movement = False
 
+
     screen.fill("black")
     draw_board()
     center_x = int(player_x + image_xscale//2)
     center_y = int(player_y + image_yscale//2)
 
-    game_won = True
-    for i in range(len(level)):
-        if 1 in level[i] or 2 in level[i]:
-            game_won = False
+    # game_won = True
+    # for i in range(len(level)):
+    #     if 1 in level[i] or 2 in level[i]:
+    #         game_won = False
+    
+    
     last_direction = draw_player(last_direction)
-
     draw_misc()
     turns_allowed = [True,True,True,True]
-    # turns_allowed = check_position(center_x, center_y)
 
     if moving:
         player_x, player_y = move_player(player_x, player_y)
@@ -411,18 +411,49 @@ while run:
         score, powerup, power_counter, last_activate_turn_tile
     )
 
-
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
         change_colors()
-
         # Movement
         pyautogui.keyUp(current_command)
         if len(commands_list) > 0:
             current_command = commands_list.pop(0)
         else:
             current_command = 'None'
+            game_won = True
         pyautogui.keyDown(current_command)
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
+
+
+    if  game_won:
+        first_movement = True
+        draw_misc()
+        pygame.display.flip()
+        time.sleep(3)
+        print("ahora")
+        powerup = False
+        power_counter = 0
+        lives -= 1
+        startup_counter = 0
+        start = start_positions_paradigm_SI.pop(0)
+        player_x = int(start[0] * num2)
+        player_y = int(start[1]* num1)
+        direction = start[2]
+        direction_command = start[2]
+        score = 0
+        lives = 3
+        current_level += 1
+        if current_level < len(boards_paradigm_SI):
+            level = copy.deepcopy(boards_paradigm_SI[current_level])
+        game_over = False
+        game_won = False
+        commands_list = commands_list_board.pop(0)
+        current_command = commands_list.pop(0)
+        goal_x, goal_y = command_leader(current_command, player_y, player_x)
+        
+
+
+
+
 
 
     for event in pygame.event.get():
