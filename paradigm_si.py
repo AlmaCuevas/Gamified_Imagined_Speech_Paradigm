@@ -40,7 +40,7 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font("freesansbold.ttf", 30)
-color = "blue"
+color = "white"
 PI = math.pi
 
 
@@ -156,7 +156,7 @@ def check_collisions(scor, power, power_count, last_activate_turn_tile):
     return scor, power, power_count, last_activate_turn_tile
 
 
-def draw_board():
+def draw_board(color):
     for i in range(len(level)):
         for j in range(len(level[i])):
             if level[i][j] == 1:
@@ -323,7 +323,7 @@ def move_player(play_x, play_y):
         play_y += player_speed
     return play_x, play_y
 
-def change_colors(): 
+def change_colors(color):
 
     if len(commands_list)> 0:
         if first_movement==True:
@@ -352,8 +352,8 @@ def change_colors():
         print(commands_list[0])    
         time.sleep(1.4)
         # Green (Imagined Speech)
-        screen.fill("green")
-        draw_board()
+        color = "green"
+        draw_board(color)
         draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
@@ -361,13 +361,14 @@ def change_colors():
         time.sleep(1.4)
 
         # Purple (Auditory Speech)
-        screen.fill("violet")
-        draw_board()
+        color = "blue"
+        draw_board(color)
         draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
         mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
         time.sleep(1.4)
+        return color
         
     
 
@@ -399,12 +400,12 @@ while run:
         moving = True
 
     if moving and first_movement:
-       change_colors()
+       color = change_colors(color)
        first_movement = False
 
 
     screen.fill("black")
-    draw_board()
+    draw_board(color)
     center_x = int(player_x + image_xscale//2)
     center_y = int(player_y + image_yscale//2)
 
@@ -425,7 +426,7 @@ while run:
     )
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
-        change_colors()
+        change_colors(color)
         # Movement
         pyautogui.keyUp(current_command)
         if len(commands_list) > 0:
@@ -442,7 +443,7 @@ while run:
         draw_misc()
         pygame.display.flip()
         time.sleep(3)
-        print("ahora")
+        #print("ahora")
         powerup = False
         power_counter = 0
         lives -= 1
