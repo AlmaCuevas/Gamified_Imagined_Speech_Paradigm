@@ -55,7 +55,7 @@ player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/forward.png'), (image_xscale, image_yscale)),
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/back.png'), (image_xscale, image_yscale))] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN 
 arrow = pygame.transform.scale(
-    pygame.image.load(f"assets/extras_images/arrow.png"), (30, 30)
+    pygame.image.load(f"assets/extras_images/arrow.png"), (image_xscale, image_yscale)
 )
 arrow_transparent = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow_transparent.png"), (30, 30)
@@ -521,7 +521,21 @@ def move_player(play_x, play_y):
         play_y += player_speed
     return play_x, play_y
 
-def change_colors():
+def change_colors(): 
+    # if commands_list[1]==2:
+    #      print("Hola")
+    if commands_list[0] == 'right':  # Right
+        screen.blit(arrow_images[0],(player_x+num2, player_y))    
+    elif commands_list[0] == 'left':  # Left
+        screen.blit(arrow_images[1],(player_x-num2, player_y))    
+    elif commands_list[0] == 'up':  # Up
+        screen.blit(arrow_images[2],(player_x, player_y-num1)) 
+    elif commands_list[0] == 'down':  # Down
+        screen.blit(arrow_images[3],(player_x, player_y+num1))
+    pygame.display.flip()
+
+    print(last_direction)
+    print(commands_list[0])    
     time.sleep(1.4)
     # Green (Imagined Speech)
     screen.fill("green")
