@@ -1,12 +1,10 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
-from board import boards_paradigm_SI, start_positions_paradigm_SI, commands_list_board
+from board import prompts_paradigm_SI,boards_paradigm_SI, start_positions_paradigm_SI, commands_list_board
 import pygame
 import math
 import time
 import pyautogui
-
-
 import pylsl
 
 # LSL COMMUNICATION
@@ -27,6 +25,7 @@ WIDTH = int(display_info.current_h)
 HEIGHT = int(display_info.current_h)
 
 level = copy.deepcopy(boards_paradigm_SI[current_level])
+prompts = copy.deepcopy(prompts_paradigm_SI[current_level])
 div_width = len(level[0])  # 31
 div_height = len(level)  # 38
 num1 = HEIGHT // div_height #23
@@ -47,8 +46,6 @@ PI = math.pi
 ## Images import
 image_xscale = num2
 image_yscale = num1
-
-
 player_images = []
 player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (image_xscale, image_yscale)),
                  pygame.transform.scale(pygame.image.load(f'assets/extras_images/left.png'), (image_xscale, image_yscale)),
@@ -57,23 +54,12 @@ player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images
 arrow = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow.png"), (image_xscale, image_yscale)
 )
-arrow_transparent = pygame.transform.scale(
-    pygame.image.load(f"assets/extras_images/arrow_transparent.png"), (30, 30)
-)
 arrow_images = [
     pygame.transform.rotate(arrow, -90),
     pygame.transform.rotate(arrow, 90),
     arrow,
     pygame.transform.rotate(arrow, 180),
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-arrow_transparent_images = [
-    pygame.transform.rotate(arrow_transparent, -90),
-    pygame.transform.rotate(arrow_transparent, 90),
-    arrow_transparent,
-    pygame.transform.rotate(arrow_transparent, 180),
-]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-arrow_x = [65, 5, 35, 35]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 cookie = pygame.transform.scale(pygame.image.load(f'assets/extras_images/cookie.png'), (image_xscale, image_yscale))
 
 ## Positions
@@ -84,43 +70,18 @@ direction = start[2]
 last_direction = start[2]
 
 #Other
-counter = 0
-flicker = False
 turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 direction_command = start[2]
 player_speed = 1
 score = 0
-powerup = False
-power_counter = 0
-targets = [
-    (player_x, player_y),
-    (player_x, player_y),
-    (player_x, player_y),
-    (player_x, player_y),
-]
 moving = False
 startup_counter = 0
-lives = 3
-game_over = False
 game_won = False
 last_activate_turn_tile = [1, 1]
 
 def draw_misc():
     score_text = font.render(f"Score: {score}", True, "white")
     screen.blit(score_text, (10, 920))
-    if powerup:
-        pygame.draw.circle(screen, "blue", (140, 930), 15)
-    for i in range(lives):
-        screen.blit(
-            pygame.transform.scale(player_images[0], (30, 30)), (35, 215 + i * 40)
-        )
-    if game_over:
-        pygame.draw.rect(screen, "red", [50, 200, 800, 300], 0, 10)
-        pygame.draw.rect(screen, "gray", [70, 220, 760, 260], 0, 10)
-        gameover_text = font.render("Game over!", True, "red")
-        gameover_text2 = font.render("Space bar to restart!", True, "red")
-        screen.blit(gameover_text, (400, 270))
-        screen.blit(gameover_text2, (350, 370))
     if game_won:
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
@@ -142,7 +103,7 @@ def command_leader(current_command, player_y, player_x):
         goal_y = player_y + num1 * 3
     return goal_x, goal_y
 
-def check_collisions(scor, power, power_count, last_activate_turn_tile):
+def check_collisions(scor, last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
     if 0 < player_x < 870:
         if level[center_y // num1][center_x // num2] == 1:
@@ -151,9 +112,7 @@ def check_collisions(scor, power, power_count, last_activate_turn_tile):
         if level[center_y // num1][center_x // num2] == 2:
             level[center_y // num1][center_x // num2] = 0
             scor += 50
-            power = True
-            power_count = 0
-    return scor, power, power_count, last_activate_turn_tile
+    return scor, last_activate_turn_tile
 
 
 def draw_board(color):
@@ -327,7 +286,7 @@ def change_colors(color):
 
     if len(commands_list)> 0:
         if first_movement==True:
-            said_command = current_command
+            movement_command = current_command
             if current_command == 'right':  # Right
                 screen.blit(arrow_images[0],(player_x+num2, player_y))    
             elif current_command == 'left':  # Left
@@ -337,7 +296,7 @@ def change_colors(color):
             elif current_command == 'down':  # Down
                 screen.blit(arrow_images[3],(player_x, player_y+num1))
         else:
-            said_command = commands_list[0]
+            movement_command = commands_list[0]
             if commands_list[0] == 'right':  # Right
                 screen.blit(arrow_images[0],(player_x+num2, player_y))    
             elif commands_list[0] == 'left':  # Left
@@ -348,8 +307,11 @@ def change_colors(color):
                 screen.blit(arrow_images[3],(player_x, player_y+num1))
         
         pygame.display.flip()
+        said_command = prompts.pop(0)
+
         print(last_direction)
-        print(commands_list[0])    
+        print(movement_command)  
+        print(said_command)  
         time.sleep(1.4)
         # Green (Imagined Speech)
         color = "green"
@@ -373,7 +335,6 @@ def change_colors(color):
 
         return color
         
-    
 
 # Commands
 current_command = commands_list.pop(0)
@@ -383,20 +344,7 @@ run = True
 first_movement = True
 while run:
     timer.tick(fps)
-    if counter < 19:
-        counter += 1
-        if counter > 3:
-            flicker = False
-    else:
-        counter = 0
-        flicker = True
-    if powerup and power_counter < 600:
-        power_counter += 1
-    elif powerup and power_counter >= 600:
-        power_counter = 0
-        powerup = False
-        eaten_ghost = [False, False, False, False]
-    if startup_counter < fps*5 and not game_over and not game_won:
+    if startup_counter < fps*1 and not game_won:
         moving = False
         startup_counter += 1
     else:
@@ -412,11 +360,6 @@ while run:
     center_x = int(player_x + image_xscale//2)
     center_y = int(player_y + image_yscale//2)
 
-    # game_won = True
-    # for i in range(len(level)):
-    #     if 1 in level[i] or 2 in level[i]:
-    #         game_won = False
-    
     
     last_direction = draw_player(last_direction)
     draw_misc()
@@ -424,8 +367,8 @@ while run:
 
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-    score, powerup, power_counter, last_activate_turn_tile = check_collisions(
-        score, powerup, power_counter, last_activate_turn_tile
+    score, last_activate_turn_tile = check_collisions(
+        score, last_activate_turn_tile
     )
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
@@ -446,10 +389,6 @@ while run:
         draw_misc()
         pygame.display.flip()
         time.sleep(10)
-        #print("ahora")
-        powerup = False
-        power_counter = 0
-        lives -= 1
         startup_counter = 0
         start = start_positions_paradigm_SI.pop(0)
         player_x = int(start[0] * num2)
@@ -457,21 +396,15 @@ while run:
         direction = start[2]
         direction_command = start[2]
         score = 0
-        lives = 3
         current_level += 1
         if current_level < len(boards_paradigm_SI):
             level = copy.deepcopy(boards_paradigm_SI[current_level])
-        game_over = False
+            prompts = copy.deepcopy(prompts_paradigm_SI[current_level])
         game_won = False
         commands_list = commands_list_board.pop(0)
         current_command = commands_list.pop(0)
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
         
-
-
-
-
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -487,26 +420,6 @@ while run:
                 direction_command = 2
             if event.key == pygame.K_DOWN:
                 direction_command = 3
-            if event.key == pygame.K_SPACE and (game_over or game_won):
-                powerup = False
-                power_counter = 0
-                lives -= 1
-                startup_counter = 0
-                start = start_positions_paradigm_SI.pop(0)
-                player_x = int(start[0] * num2)
-                player_y = int(start[1]* num1)
-                direction = start[2]
-                direction_command = start[2]
-                score = 0
-                lives = 3
-                current_level += 1
-                if current_level < len(boards_paradigm_SI):
-                    level = copy.deepcopy(boards_paradigm_SI[current_level])
-                game_over = False
-                game_won = False
-                commands_list = commands_list_board.pop(0)
-                current_command = commands_list.pop(0)
-                goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE and direction_command == 4:
@@ -522,17 +435,8 @@ while run:
 
     for direction_index in range(0, 4):
         if direction_command == direction_index:
-            # screen.blit(
-            #     arrow_images[direction_index],
-            #     (arrow_x[direction_index], arrow_y[direction_index]),
-            # )
             if turns_allowed[direction_index]:
                 direction = direction_index
-        # else:
-        #     screen.blit(
-        #         arrow_transparent_images[direction_index],
-        #         (arrow_x[direction_index], arrow_y[direction_index]),
-        #     )
     if direction_command == 4:
         direction = 4
     pygame.display.flip()

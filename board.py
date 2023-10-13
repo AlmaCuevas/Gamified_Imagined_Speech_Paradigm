@@ -428,9 +428,9 @@ path_03=[
 
 path_1 = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
-[3,0,0,0,0,0,0,0,0,6,4,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,-13,3,2,1,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,7,4,4,5,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,-13,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,6,4,4,8,1,7,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,-12,3,2,1,1,1,1,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,7,4,4,4,4,4,5,1,3,0,-10,0,0,0,0,0,0,0,0,0,0,3],
@@ -512,9 +512,9 @@ path_3=[
 [3,0,0,0,0,0,0,0,0,0,0,0,0,-10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,3,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,3,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,6,4,4,8,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,-9,3,2,1,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,7,4,4,5,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,1,7,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,1,1,1,2,3,-9,0,0,0,0,0,0,0,0,0,0,0,3],
+[3,0,0,0,0,0,0,0,0,0,0,0,3,1,6,4,4,8,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,3,1,7,4,4,4,4,4,5,0,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,3,1,1,1,1,1,1,2,3,-8,0,0,0,0,0,0,0,0,3],
 [3,0,0,0,0,0,0,0,0,0,0,0,7,4,4,5,1,6,4,4,8,0,0,0,0,0,0,0,0,0,3],
@@ -564,16 +564,49 @@ start_positions=[start_0,start_01,start_02,start_03,start_2, start_1, start_3,st
 
 boards_paradigm_SI=[path_0,path_01,path_02,path_03,path_1, path_2,path_3]
 start_positions_paradigm_SI=[start_0,start_01,start_02,start_03,start_1, start_2,start_3]
-path_commands_0 = ['up', 'down', 'right', 'left', 'down', 'up', 'left', 'right']
-path_commands_01= ['right', 'left', 'down', 'up', 'left', 'right', 'up', 'down']
-path_commands_02= ['down', 'up', 'left', 'right', 'up', 'down', 'right', 'left']
-path_commands_03= ['left', 'right', 'up', 'down', 'right', 'left', 'down', 'up']
-path_commands_1 = ['up', 'left', 'right', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'right', 'up', 'up', 'up', 'right', 'right', 'down', 'up', 'right', 'left', 'left', 'up', 'left', 'left', 'right','up', 'left', 'right', 'up', 'right', 'right', 'right', 'left', 'up', 'down', 'down', 'up', 'left', 'up', 'up', 'left', 'left', 'right', 'up', 'left']
+path_commands_0 = ['up', 'down', 'right', 'left', 'down', 'up', 'left']
+path_commands_01= ['right', 'left', 'down', 'up', 'left', 'right', 'up']
+path_commands_02= ['down', 'up', 'left', 'right', 'up', 'down', 'right']
+path_commands_03= ['left', 'right', 'up', 'down', 'right', 'left', 'down']
+path_commands_1 = ['up', 'left', 'right', 'up', 'right', 'left', 'up', 'down', 'left', 'left', 'right', 'up', 'up', 'up', 'right', 'right', 'down', 'up', 'right', 'left', 'left', 'up', 'left', 'left', 'right','up', 'left', 'right', 'up', 'right', 'right', 'right', 'left', 'up', 'down', 'down', 'up', 'left', 'up', 'up', 'left', 'left', 'right', 'up']
 path_commands_2 = ['up', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up']
-path_commands_3 = ['up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'up']
+path_commands_3 = ['up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'right', 'left', 'up']
 commands_list_board =[path_commands_0,path_commands_01,path_commands_02,path_commands_03,path_commands_1, path_commands_2, path_commands_3]
+## List of prompts
+prompts1 = [
+            "AVANZAR", "IZQUIERDA", "RETROCEDER", "IZQUIERDA", "DERECHA",
+            "RETROCEDER", "DERECHA", "RETROCEDER", "DERECHA", "AVANZAR",
+            "RETROCEDER", "IZQUIERDA", "AVANZAR", "AVANZAR", "DERECHA",
+            "AVANZAR", "DERECHA", "RETROCEDER", "DERECHA", "RETROCEDER",
+            "AVANZAR", "DERECHA", "IZQUIERDA", "AVANZAR", "RETROCEDER",
+            "IZQUIERDA", "IZQUIERDA", "RETROCEDER", "IZQUIERDA", "DERECHA",
+            "AVANZAR", "AVANZAR", "RETROCEDER", "DERECHA", "RETROCEDER",
+            "AVANZAR", "RETROCEDER", "IZQUIERDA", "DERECHA", "AVANZAR",
+            "IZQUIERDA", "AVANZAR", "RETROCEDER", "IZQUIERDA", "IZQUIERDA"
+            ]  
+prompts2 = [
+            "AVANZAR", "IZQUIERDA", "RETROCEDER", "IZQUIERDA", "DERECHA",
+            "AVANZAR", "RETROCEDER", "DERECHA", "IZQUIERDA", "AVANZAR",
+            "RETROCEDER", "IZQUIERDA", "DERECHA", "AVANZAR", "RETROCEDER",
+            "DERECHA", "IZQUIERDA", "AVANZAR", "RETROCEDER", "IZQUIERDA",
+            "DERECHA", "IZQUIERDA", "IZQUIERDA", "AVANZAR", "RETROCEDER",
+            "IZQUIERDA", "DERECHA", "AVANZAR", "RETROCEDER", "DERECHA",
+            "IZQUIERDA", "AVANZAR", "RETROCEDER", "IZQUIERDA", "DERECHA",
+            "AVANZAR", "RETROCEDER", "DERECHA"
+            ]
+prompts3 = [
+            "AVANZAR", "DERECHA", "RETROCEDER", "AVANZAR", "DERECHA",
+            "IZQUIERDA", "RETROCEDER", "AVANZAR", "IZQUIERDA", "DERECHA",
+            "RETROCEDER", "AVANZAR", "DERECHA", "IZQUIERDA", "RETROCEDER",
+            "AVANZAR", "IZQUIERDA", "IZQUIERDA", "DERECHA", "IZQUIERDA",
+            "RETROCEDER", "AVANZAR", "IZQUIERDA", "DERECHA", "RETROCEDER",
+            "AVANZAR", "DERECHA", "IZQUIERDA", "RETROCEDER", "AVANZAR",
+            "IZQUIERDA", "DERECHA", "RETROCEDER", "AVANZAR", "DERECHA",
+            "DERECHA", "RETROCEDER", "DERECHA"
+            ]
 
-# #Pruebas 2y3
-# boards_paradigm_SI=[path_3]
-# start_positions_paradigm_SI=[start_3]
-# commands_list_board =[path_commands_3]
+#Pruebas 1,2y3
+prompts_paradigm_SI =[prompts1, prompts2, prompts3]
+boards_paradigm_SI=[path_1, path_2,path_3]
+start_positions_paradigm_SI=[start_1, start_2,start_3]
+commands_list_board =[path_commands_1, path_commands_2, path_commands_3]
