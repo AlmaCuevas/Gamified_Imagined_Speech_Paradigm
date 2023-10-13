@@ -124,8 +124,8 @@ def draw_misc():
     if game_won:
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
-        gameover_text = font.render("Victory!", True, "red")
-        gameover_text2 = font.render("Prepare for the next level!", True, "red")
+        gameover_text = font.render("¡Nivel Completado!", True, "red")
+        gameover_text2 = font.render("¡Prepárate para el siguiente nivel!", True, "red")
         screen.blit(gameover_text, (WIDTH//2, HEIGHT//3))
         screen.blit(gameover_text2, (WIDTH//3, HEIGHT//2))
 
@@ -172,7 +172,7 @@ def draw_board(color):
                 #     screen,
                 #     "white",
                 #     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
-                #     10,
+                #     6,
                 # )
             if level[i][j] == 3:
                 pygame.draw.line(
@@ -445,7 +445,7 @@ while run:
         first_movement = True
         draw_misc()
         pygame.display.flip()
-        time.sleep(3)
+        time.sleep(10)
         #print("ahora")
         powerup = False
         power_counter = 0
