@@ -73,15 +73,12 @@ last_direction = start[2]
 turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 direction_command = start[2]
 player_speed = 1
-# score = 0
 moving = False
 startup_counter = 0
 game_won = False
 last_activate_turn_tile = [1, 1]
 
 def draw_misc():
-    # score_text = font.render(f"Score: {score}", True, "white")
-    # screen.blit(score_text, (10, 920))
     if game_won:
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
@@ -130,12 +127,6 @@ def draw_board(color):
                 )
             if level[i][j] == 2:
                 screen.blit(cookie, (j * num2, i * num1))
-                # pygame.draw.circle(
-                #     screen,
-                #     "white",
-                #     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
-                #     6,
-                # )
             if level[i][j] == 3:
                 pygame.draw.line(
                     screen,
@@ -224,52 +215,6 @@ def draw_player(last_direction):
         screen.blit(player_images[last_direction], (player_x, player_y))
     return last_direction
 
-def check_position(centerx, centery):
-    turns = [False, False, False, False]
-    num3 = 5
-    # check collisions based on center x and center y of player +/- fudge number
-    if centerx // 30 < 29:
-        if direction == 0:
-            if level[centery // num1][(centerx - num3) // num2] < 3:
-                turns[1] = True
-        if direction == 1:
-            if level[centery // num1][(centerx + num3) // num2] < 3:
-                turns[0] = True
-        if direction == 2:
-            if level[(centery + num3) // num1][centerx // num2] < 3:
-                turns[3] = True
-        if direction == 3:
-            if level[(centery - num3) // num1][centerx // num2] < 3:
-                turns[2] = True
-
-        if direction == 2 or direction == 3:
-            if 12 <= centerx % num2 <= 18:
-                if level[(centery + num3) // num1][centerx // num2] < 3:
-                    turns[3] = True
-                if level[(centery - num3) // num1][centerx // num2] < 3:
-                    turns[2] = True
-            if 12 <= centery % num1 <= 18:
-                if level[centery // num1][(centerx - num2) // num2] < 3:
-                    turns[1] = True
-                if level[centery // num1][(centerx + num2) // num2] < 3:
-                    turns[0] = True
-        if direction == 0 or direction == 1:
-            if 12 <= centerx % num2 <= 18:
-                if level[(centery + num1) // num1][centerx // num2] < 3:
-                    turns[3] = True
-                if level[(centery - num1) // num1][centerx // num2] < 3:
-                    turns[2] = True
-            if 12 <= centery % num1 <= 18:
-                if level[centery // num1][(centerx - num3) // num2] < 3:
-                    turns[1] = True
-                if level[centery // num1][(centerx + num3) // num2] < 3:
-                    turns[0] = True
-        if direction == 4:
-            turns = [True, True, True, True]
-    else:
-        turns = [True, True, True, True]
-
-    return turns
 
 
 def move_player(play_x, play_y):
@@ -319,7 +264,6 @@ def change_colors(color):
         # Green (Imagined Speech)
         color = "green"
         draw_board(color)
-        draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
         mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(said_command)]))
@@ -328,7 +272,6 @@ def change_colors(color):
         # Purple (Auditory Speech)
         color = "blue"
         draw_board(color)
-        draw_misc()
         draw_player(last_direction)
         pygame.display.flip()
         mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
@@ -365,13 +308,11 @@ while run:
 
     
     last_direction = draw_player(last_direction)
-    # draw_misc()
     turns_allowed = [True,True,True,True]
 
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-    # score, last_activate_turn_tile = check_collisions(
-    #     score, last_activate_turn_tile)
+        
     last_activate_turn_tile = check_collisions (last_activate_turn_tile)
     
 
@@ -379,9 +320,6 @@ while run:
         change_colors(color)
         # Movement
         pyautogui.keyUp(current_command)
-        print("Actual {}".format(current_command))
-        print("Goal_x {}".format(goal_x))
-        print("Goal_y {}".format(goal_y))
         if len(commands_list) > 0:
             current_command = commands_list.pop(0)
         else:
@@ -389,9 +327,6 @@ while run:
             game_won = True
         pyautogui.keyDown(current_command)
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
-        print("Nuevo {}".format(current_command))
-        print("Goal_x {}".format(goal_x))
-        print("Goal_y {}".format(goal_y))
 
 
     if  game_won:
