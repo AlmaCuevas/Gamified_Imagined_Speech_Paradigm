@@ -290,7 +290,7 @@ run = True
 first_movement = True
 while run:
     timer.tick(fps)
-    if startup_counter < fps*1 and not game_won:
+    if startup_counter < fps*20 and not game_won:
         moving = False
         startup_counter += 1
     else:
@@ -318,14 +318,22 @@ while run:
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
         change_colors(color)
-        # Movement
-        pyautogui.keyUp(current_command)
+        # Change Command
         if len(commands_list) > 0:
             current_command = commands_list.pop(0)
         else:
             current_command = 'None'
             game_won = True
-        pyautogui.keyDown(current_command)
+        # Change Direction
+        if current_command == "right":
+            direction = 0
+        if current_command == "left":
+            direction = 1
+        if current_command == "up":
+            direction = 2
+        if current_command == "down":
+            direction = 3
+
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 
@@ -354,36 +362,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                direction_command = 4
-            if event.key == pygame.K_RIGHT:
-                direction_command = 0
-            if event.key == pygame.K_LEFT:
-                direction_command = 1
-            if event.key == pygame.K_UP:
-                direction_command = 2
-            if event.key == pygame.K_DOWN:
-                direction_command = 3
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE and direction_command == 4:
-                direction_command = direction
-            if event.key == pygame.K_RIGHT and direction_command == 0:
-                direction_command = direction
-            if event.key == pygame.K_LEFT and direction_command == 1:
-                direction_command = direction
-            if event.key == pygame.K_UP and direction_command == 2:
-                direction_command = direction
-            if event.key == pygame.K_DOWN and direction_command == 3:
-                direction_command = direction
-
-    for direction_index in range(0, 4):
-        if direction_command == direction_index:
-            if turns_allowed[direction_index]:
-                direction = direction_index
-    if direction_command == 4:
-        direction = 4
     pygame.display.flip()
 pygame.quit()
 

@@ -68,15 +68,12 @@ last_direction = start[2]
 turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 direction_command = start[2]
 player_speed = 1
-score = 0
 moving = False
 startup_counter = 0
 game_won = False
 last_activate_turn_tile = [1, 1]
 
 def draw_misc():
-    score_text = font.render(f"Score: {score}", True, "white")
-    screen.blit(score_text, (10, 920))
     text_x = WIDTH//20
     text_y = HEIGHT//10
     if current_level == 0 or current_level == 1:
@@ -120,16 +117,14 @@ def command_leader(current_command, player_y, player_x):
         goal_y = player_y + num1 * 3
     return goal_x, goal_y
 
-def check_collisions(scor, last_activate_turn_tile):
+def check_collisions(last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
     if 0 < player_x < 870:
         if level[center_y // num1][center_x // num2] == 1:
             level[center_y // num1][center_x // num2] = 0
-            scor += 10
         if level[center_y // num1][center_x // num2] == 2:
             level[center_y // num1][center_x // num2] = 0
-            scor += 50
-    return scor, last_activate_turn_tile
+    return last_activate_turn_tile
 
 
 def draw_board(color):
@@ -451,21 +446,26 @@ while run:
 
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-    score, last_activate_turn_tile = check_collisions(
-        score, last_activate_turn_tile
-    )
+    last_activate_turn_tile = check_collisions(last_activate_turn_tile)
 
     if math.isclose(goal_x, player_x, abs_tol = 0) and math.isclose(goal_y, player_y, abs_tol = 0):
         if len(commands_list) != 0:
             change_colors(color)
-        # Movement
-        pyautogui.keyUp(current_command)
+       # Change Command
         if len(commands_list) > 0:
             current_command = commands_list.pop(0)
         else:
             current_command = 'None'
             game_won = True
-        pyautogui.keyDown(current_command)
+        # Change Direction
+        if current_command == "right":
+            direction = 0
+        if current_command == "left":
+            direction = 1
+        if current_command == "up":
+            direction = 2
+        if current_command == "down":
+            direction = 3
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
 
@@ -479,7 +479,6 @@ while run:
         player_y = int(start[1]* num1)
         direction = start[2]
         direction_command = start[2]
-        score = 0
         current_level += 1
         if current_level < len(boards_tutorial):
             level = copy.deepcopy(boards_tutorial[current_level])
@@ -493,36 +492,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                direction_command = 4
-            if event.key == pygame.K_RIGHT:
-                direction_command = 0
-            if event.key == pygame.K_LEFT:
-                direction_command = 1
-            if event.key == pygame.K_UP:
-                direction_command = 2
-            if event.key == pygame.K_DOWN:
-                direction_command = 3
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE and direction_command == 4:
-                direction_command = direction
-            if event.key == pygame.K_RIGHT and direction_command == 0:
-                direction_command = direction
-            if event.key == pygame.K_LEFT and direction_command == 1:
-                direction_command = direction
-            if event.key == pygame.K_UP and direction_command == 2:
-                direction_command = direction
-            if event.key == pygame.K_DOWN and direction_command == 3:
-                direction_command = direction
-
-    for direction_index in range(0, 4):
-        if direction_command == direction_index:
-            if turns_allowed[direction_index]:
-                direction = direction_index
-    if direction_command == 4:
-        direction = 4
     pygame.display.flip()
 pygame.quit()
 
