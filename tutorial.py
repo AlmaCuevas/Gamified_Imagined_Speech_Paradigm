@@ -353,7 +353,7 @@ first_movement = True
 move_counter = 0
 while run:
     timer.tick(fps)
-    if startup_counter < fps*5 and not game_won:
+    if startup_counter < fps*3 and not game_won:
         moving = False
         startup_counter += 1
     else:
@@ -377,7 +377,7 @@ while run:
         screen.blit(player_images[4], (WIDTH//10, HEIGHT//3))
         screen.blit(cookie_big, (WIDTH-WIDTH//2, HEIGHT//3))
         pygame.display.flip()
-        time.sleep(5)
+        time.sleep(7)
         # Prompts
         screen.fill("black")
         text_x = WIDTH//4
@@ -421,6 +421,7 @@ while run:
     center_y = int(player_y + image_yscale//2)
 
     # FIX POSITIONS
+    # Tutorial
     if current_level==2 and moving:
         direction = 3 
         last_direction = draw_player(last_direction)
@@ -439,6 +440,23 @@ while run:
     elif current_level==7 and moving:
         direction = 1 
         last_direction = draw_player(last_direction)
+    # Examples
+    if current_level==8 and moving and move_counter==1:
+        direction = 0 
+        last_direction = draw_player(last_direction)
+        move_counter +=1
+    elif current_level==9 and moving and move_counter==2:
+        direction = 2 
+        last_direction = draw_player(last_direction)
+        move_counter +=1
+    elif current_level==10 and moving and move_counter==3:
+        direction = 1 
+        last_direction = draw_player(last_direction)
+        move_counter +=1
+    elif current_level==11 and moving and move_counter==4:
+        direction = 0 
+        last_direction = draw_player(last_direction)
+        move_counter +=1
 
     last_direction = draw_player(last_direction)
     draw_misc()
