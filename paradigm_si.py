@@ -4,16 +4,15 @@ from board import prompts_paradigm_SI,boards_paradigm_SI, start_positions_paradi
 import pygame
 import math
 import time
-import pyautogui
 import pylsl
 
 # LSL COMMUNICATION
-def lsl_mrk_outlet(name):
-   info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
-   outlet = pylsl.stream_outlet(info, 1, 1)
-   print('pacman created result outlet.')
-   return outlet
-mrkstream_allowed_turn_out = lsl_mrk_outlet('PyGame - Paradgima Experimental') # important this is first
+# def lsl_mrk_outlet(name):
+#    info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666');
+#    outlet = pylsl.stream_outlet(info, 1, 1)
+#    print('pacman created result outlet.')
+#    return outlet
+# mrkstream_allowed_turn_out = lsl_mrk_outlet('PyGame - Paradgima Experimental') # important this is first
 
 # GAME
 pygame.init()
@@ -266,7 +265,7 @@ def change_colors(color):
         draw_board(color)
         draw_player(last_direction)
         pygame.display.flip()
-        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(said_command)]))
+        # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(said_command)]))
         time.sleep(1.4)
 
         # Purple (Auditory Speech)
@@ -274,7 +273,7 @@ def change_colors(color):
         draw_board(color)
         draw_player(last_direction)
         pygame.display.flip()
-        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
+        # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " +said_command)]))
         time.sleep(1.4)
         color = "white"
         draw_board(color)

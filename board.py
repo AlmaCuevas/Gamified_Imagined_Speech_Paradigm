@@ -764,4 +764,8 @@ commands_list_tutorial =[path_commands_avanzar_0, path_commands_avanzar_1, # Tut
                          path_commands_izquierda_0, path_commands_izquierda_1, 
                          path_commands_0,path_commands_01,path_commands_02,path_commands_03]
 
+# Maze
+boards=[maze_A, maze_B, maze_C, maze_D]
+start_positions=[start_A,start_B,start_C,start_D]
+
 
