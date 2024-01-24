@@ -139,12 +139,6 @@ def draw_board(color):
                 )
             if level[i][j] == 2:
                 screen.blit(cookie, (j * num2, i * num1))
-                # pygame.draw.circle(
-                #     screen,
-                #     "white",
-                #     (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
-                #     6,
-                # )
             if level[i][j] == 3:
                 pygame.draw.line(
                     screen,
