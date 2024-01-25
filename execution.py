@@ -1,13 +1,16 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
+from datetime import datetime
+
 from board_execution import execution_boards, start_execution_positions
 import pygame
 import math
 import time
 import pylsl
+import os
 
 dev_mode = True
-# TODO: Center the dog, I think is due to the border limits that the dog center keeps moving
+
 # TODO: add start and finish time and make the game save the file info
 if not dev_mode:
     # LSL COMMUNICATION
@@ -81,44 +84,35 @@ game_over = False
 game_won = False
 last_activate_turn_tile = [4, 4] # Check that in all levels this is a 0 pixel
 
+
 def draw_misc():
+    gameover_text = font.render("¡Nivel Completado!", True, "red")
     if game_over:
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
-        pygame.draw.rect(screen, "red", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
-        gameover_text = font.render("Game over!", True, "red")
-        gameover_text2 = font.render("Space bar to restart!", True, "red")
-        screen.blit(gameover_text, (WIDTH//2, HEIGHT//3))
-        screen.blit(gameover_text2, (WIDTH//3, HEIGHT//2))
+        pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
+        gameover_text2 = font.render("¡Gracias por participar!", True, "red")
+        gameover_text3 = font.render("Ya puedes cerrar la ventana.", True, "red")
+        screen.blit(gameover_text, (xscale*13, HEIGHT//3))
+        screen.blit(gameover_text2, (xscale*12, HEIGHT//2))
+        screen.blit(gameover_text3, (xscale * 11, xscale * 20))
     elif game_won:
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
-        gameover_text = font.render("¡Nivel Completado!", True, "red")
         gameover_text2 = font.render("¡Prepárate para el siguiente nivel!", True, "red")
         screen.blit(gameover_text, (xscale*13, HEIGHT//3))
         screen.blit(gameover_text2, (xscale*9, HEIGHT//2))
 
-def check_collisions (last_activate_turn_tile):
+def check_collisions(last_activate_turn_tile):
     level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
     if 0 < player_x < WIDTH-xscale*2:
-        for mod in mods:
-            for mod_2 in mods:
-                if level[(center_y + mod) // yscale][(center_x + mod_2) // xscale] in [
-                    5,
-                    6,
-                    7,
-                    8,
-                ] and level[(center_y - mod) // yscale][(center_x - mod_2) // xscale] in [
-                    5,
-                    6,
-                    7,
-                    8,
-                ]:  # arc numbers
-                    level[center_y // yscale][center_x // xscale] = -1 # Change the board to yellow
-                    last_activate_turn_tile = [center_y // yscale, center_x // xscale]
-        if level[center_y // yscale][center_x // xscale] == 1:
+        corner_check=turns_allowed
+        corner_check[direction] = False
+        if sum(corner_check)>=2:
+            level[center_y // yscale][center_x // xscale] = -1
+            last_activate_turn_tile = [center_y // yscale, center_x // xscale]
+        if 1 <= level[center_y // yscale][center_x // xscale] <= 2:
             level[center_y // yscale][center_x // xscale] = 0
-        if level[center_y // yscale][center_x // xscale] == 2:
-            level[center_y // yscale][center_x // xscale] = 0
+
     return last_activate_turn_tile
 
 
@@ -206,13 +200,12 @@ def draw_board(color):
                     3,
                 )
             if level[i][j] == -1:
-                pygame.draw.rect(
+                pygame.draw.circle(
                     screen,
                     "yellow",
-                    [j * xscale + (-0.5 * xscale), i * yscale + (-0.5 * yscale), 60, 60],
-                    border_radius=10,
+                    (j * xscale + (0.5 * xscale), i * yscale + (0.5 * yscale)),
+                    xscale,
                 )
-
 
 
 def draw_player(last_direction):
@@ -233,34 +226,34 @@ def check_position(centerx, centery):
         if direction == 0:
             if level[centery // yscale][(centerx - half_scale) // xscale] < 3:
                 turns[1] = True
-        if direction == 1:
+        elif direction == 1:
             if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
                 turns[0] = True
-        if direction == 2:
+        elif direction == 2:
             if level[(centery + half_scale) // yscale][centerx // xscale] < 3:
                 turns[3] = True
-        if direction == 3:
+        elif direction == 3:
             if level[(centery - half_scale) // yscale][centerx // xscale] < 3:
                 turns[2] = True
 
         if direction == 2 or direction == 3:
-            if 12 <= centerx % xscale <= xscale:
+            if xscale//3 <= centerx % xscale <= xscale:
                 if level[(centery + half_scale) // yscale][centerx // xscale] < 3:
                     turns[3] = True
                 if level[(centery - half_scale) // yscale][centerx // xscale] < 3:
                     turns[2] = True
-            if 12 <= centery % yscale <= yscale:
+            if yscale//3 <= centery % yscale <= yscale:
                 if level[centery // yscale][(centerx - xscale) // xscale] < 3:
                     turns[1] = True
                 if level[centery // yscale][(centerx + xscale) // xscale] < 3:
                     turns[0] = True
         if direction == 0 or direction == 1:
-            if 12 <= centerx % xscale <= xscale:
+            if xscale//3 <= centerx % xscale <= xscale:
                 if level[(centery + yscale) // yscale][centerx // xscale] < 3:
                     turns[3] = True
                 if level[(centery - yscale) // yscale][centerx // xscale] < 3:
                     turns[2] = True
-            if 12 <= centery % yscale <= yscale:
+            if yscale//3 <= centery % yscale <= yscale:
                 if level[centery // yscale][(centerx - half_scale) // xscale] < 3:
                     turns[1] = True
                 if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
@@ -287,6 +280,7 @@ def move_player(play_x, play_y):
 
 run = True
 first_movement = True
+start_time = time.time()
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -311,16 +305,25 @@ while run:
     center_x = player_x + xscale // 2
     center_y = player_y + yscale // 2
 
-    game_won = True
-    for i in range(len(level)):
-        if 1 in level[i] or 2 in level[i]:
-            game_won = False
+    game_won = False
+    flat_level_list = [
+        x
+        for xs in level
+        for x in xs
+    ]
+    if 2 not in flat_level_list:
+        if len(start_execution_positions) == current_level+1:
+            game_over = True
+        game_won = True
+
     mods = [25, -25]
-    # Collider viewer
-    player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y+mods[0]), 20, 10)
-    player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[0], center_y+mods[1]), 20, 10)
-    player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[0]), 20, 10)
-    player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[1]), 20, 10)
+
+    if dev_mode:
+        # Collider viewer
+        player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y+mods[0]), 20, 10)
+        player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[0], center_y+mods[1]), 20, 10)
+        player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[0]), 20, 10)
+        player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[1]), 20, 10)
     last_direction = draw_player(last_direction)
     draw_misc()
 
@@ -329,7 +332,7 @@ while run:
     if moving:
         player_x, player_y = move_player(player_x, player_y)
         
-    last_activate_turn_tile = check_collisions(last_activate_turn_tile)
+    last_activate_turn_tile= check_collisions(last_activate_turn_tile)
 
 
     for event in pygame.event.get():
@@ -344,19 +347,19 @@ while run:
                 direction_command = 2
             if event.key == pygame.K_DOWN:
                 direction_command = 3
-            if event.key == pygame.K_SPACE and (game_over or game_won):
+            if event.key == pygame.K_SPACE and game_won:
                 first_movement = True
                 draw_misc()
                 pygame.display.flip()
                 startup_counter = 0
                 current_level += 1
-                start = start_execution_positions[current_level]
-                player_x = int(start[0] * xscale)
-                player_y = int(start[1] * yscale)
-                direction = start[2]
-                direction_command = start[2]
                 if current_level < len(execution_boards):
                     level = copy.deepcopy(execution_boards[current_level])
+                    start = start_execution_positions[current_level]
+                    player_x = int(start[0] * xscale)
+                    player_y = int(start[1] * yscale)
+                    direction = start[2]
+                    direction_command = start[2]
                 game_won = False
         
 
@@ -375,6 +378,13 @@ while run:
             direction = direction_index
     pygame.display.flip()
 pygame.quit()
+end_time = time.time()
+total_game_time = '{:.2f}'.format(end_time-start_time)
+
+SAVING_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
 
 
-# sound effects, restart and winning messages
+file = open(os.path.join(SAVING_PATH,filename), 'w')
+file.write(f'Time: {total_game_time} s')
+file.close()
