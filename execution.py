@@ -9,9 +9,10 @@ import time
 import pylsl
 import os
 
-dev_mode = True
+ASSETS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
 
-# TODO: add start and finish time and make the game save the file info
+dev_mode = True
+# TODO: In theory is done, check this is true: The data should be saved only if game_over, not if I just quit the game
 if not dev_mode:
     # LSL COMMUNICATION
     def lsl_mrk_outlet(name):
@@ -62,6 +63,10 @@ arrow_images = [
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 cookie = pygame.transform.scale(pygame.image.load(f'assets/extras_images/cookie.png'), (xscale, yscale))
 
+sound_thud = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'thud.mp3'))
+sound_go = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'go.mp3'))
+sound_win = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'finish a level.mp3'))
+
 ## Positions
 start = start_execution_positions[current_level]
 player_x = int(start[0] * xscale)
@@ -74,8 +79,10 @@ turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 direction_command = start[2]
 if dev_mode:
     player_speed = 5
+    original_speed = 5
 else:
     player_speed = 1
+    original_speed = 1
 moving = False
 startup_counter = 0
 counter = 0
@@ -88,6 +95,7 @@ last_activate_turn_tile = [4, 4] # Check that in all levels this is a 0 pixel
 def draw_misc():
     gameover_text = font.render("¡Nivel Completado!", True, "red")
     if game_over:
+        sound_win.play()
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
         gameover_text2 = font.render("¡Gracias por participar!", True, "red")
@@ -102,18 +110,25 @@ def draw_misc():
         screen.blit(gameover_text, (xscale*13, HEIGHT//3))
         screen.blit(gameover_text2, (xscale*9, HEIGHT//2))
 
-def check_collisions(last_activate_turn_tile):
-    level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
+def check_collisions(last_activate_turn_tile, player_speed):
     if 0 < player_x < WIDTH-xscale*2:
-        corner_check=turns_allowed
+        corner_check=copy.deepcopy(turns_allowed)
         corner_check[direction] = False
-        if sum(corner_check)>=2:
-            level[center_y // yscale][center_x // xscale] = -1
-            last_activate_turn_tile = [center_y // yscale, center_x // xscale]
         if 1 <= level[center_y // yscale][center_x // xscale] <= 2:
             level[center_y // yscale][center_x // xscale] = 0
-
-    return last_activate_turn_tile
+        if sum(corner_check)>=2 or corner_check==turns_allowed:
+            if level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] != -1:
+                print('thud')
+                sound_thud.play()
+                level[center_y // yscale][center_x // xscale] = -1
+                last_activate_turn_tile = [center_y // yscale, center_x // xscale]
+                player_speed = 0
+        elif level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] == -1:
+            print('play')
+            sound_go.play()
+            level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
+            player_speed = original_speed
+    return last_activate_turn_tile, player_speed
 
 
 
@@ -150,7 +165,7 @@ def draw_board(color):
                     screen,
                     color,
                     [
-                        (j * xscale - (xscale * 0.4)) - 2,
+                        (j * xscale - (xscale * 0.4)),
                         (i * yscale + (0.5 * yscale)),
                         xscale,
                         yscale,
@@ -182,7 +197,7 @@ def draw_board(color):
                     screen,
                     color,
                     [
-                        (j * xscale - (xscale * 0.4)) - 2,
+                        (j * xscale - (xscale * 0.4)),
                         (i * yscale - (0.4 * yscale)),
                         xscale,
                         yscale,
@@ -200,13 +215,12 @@ def draw_board(color):
                     3,
                 )
             if level[i][j] == -1:
-                pygame.draw.circle(
+                pygame.draw.rect(
                     screen,
                     "yellow",
-                    (j * xscale + (0.5 * xscale), i * yscale + (0.5 * yscale)),
-                    xscale,
+                    [center_x - xscale, center_y - yscale, 60, 60],
+                    border_radius=10,
                 )
-
 
 def draw_player(last_direction):
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
@@ -240,7 +254,7 @@ def check_position(centerx, centery):
             if xscale//3 <= centerx % xscale <= xscale:
                 if level[(centery + half_scale) // yscale][centerx // xscale] < 3:
                     turns[3] = True
-                if level[(centery - half_scale) // yscale][centerx // xscale] < 3:
+                if level[(centery - half_scale - 10) // yscale][centerx // xscale] < 3:
                     turns[2] = True
             if yscale//3 <= centery % yscale <= yscale:
                 if level[centery // yscale][(centerx - xscale) // xscale] < 3:
@@ -254,14 +268,13 @@ def check_position(centerx, centery):
                 if level[(centery - yscale) // yscale][centerx // xscale] < 3:
                     turns[2] = True
             if yscale//3 <= centery % yscale <= yscale:
-                if level[centery // yscale][(centerx - half_scale) // xscale] < 3:
+                if level[centery // yscale][(centerx - half_scale - 10) // xscale] < 3:
                     turns[1] = True
                 if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
                     turns[0] = True
     else:
         turns[0] = True
         turns[1] = True
-    #print(turns)
     return turns
 
 
@@ -316,7 +329,7 @@ while run:
             game_over = True
         game_won = True
 
-    mods = [25, -25]
+    mods = [xscale // 2, xscale // -2]
 
     if dev_mode:
         # Collider viewer
@@ -331,23 +344,37 @@ while run:
     # mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(turns_allowed)]))
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-        
-    last_activate_turn_tile= check_collisions(last_activate_turn_tile)
+
+    last_activate_turn_tile, player_speed = check_collisions(last_activate_turn_tile, player_speed)
 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+        elif event.type == pygame.KEYDOWN and player_speed == 0:
+            if event.key == pygame.K_RIGHT and turns_allowed[0]:
                 direction_command = 0
-            if event.key == pygame.K_LEFT:
+                player_speed = original_speed
+            elif event.key == pygame.K_LEFT and turns_allowed[1]:
                 direction_command = 1
-            if event.key == pygame.K_UP:
+                player_speed = original_speed
+            elif event.key == pygame.K_UP and turns_allowed[2]:
                 direction_command = 2
-            if event.key == pygame.K_DOWN:
+                player_speed = original_speed
+            elif event.key == pygame.K_DOWN and turns_allowed[3]:
                 direction_command = 3
-            if event.key == pygame.K_SPACE and game_won:
+                player_speed = original_speed
+            if event.key == pygame.K_SPACE and game_over:
+                end_time = time.time()
+                total_game_time = '{:.2f}'.format(end_time - start_time)
+
+                filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
+
+                file = open(os.path.join(ASSETS_PATH, 'game_saved_files', filename), 'w')
+                file.write(f'Time: {total_game_time} s')
+                file.close()
+                run = False
+            elif event.key == pygame.K_SPACE and game_won:
                 first_movement = True
                 draw_misc()
                 pygame.display.flip()
@@ -361,16 +388,15 @@ while run:
                     direction = start[2]
                     direction_command = start[2]
                 game_won = False
-        
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT and direction_command == 0:
                 direction_command = direction
-            if event.key == pygame.K_LEFT and direction_command == 1:
+            elif event.key == pygame.K_LEFT and direction_command == 1:
                 direction_command = direction
-            if event.key == pygame.K_UP and direction_command == 2:
+            elif event.key == pygame.K_UP and direction_command == 2:
                 direction_command = direction
-            if event.key == pygame.K_DOWN and direction_command == 3:
+            elif event.key == pygame.K_DOWN and direction_command == 3:
                 direction_command = direction
 
     for direction_index in range(0, 4):
@@ -378,13 +404,3 @@ while run:
             direction = direction_index
     pygame.display.flip()
 pygame.quit()
-end_time = time.time()
-total_game_time = '{:.2f}'.format(end_time-start_time)
-
-SAVING_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
-
-
-file = open(os.path.join(SAVING_PATH,filename), 'w')
-file.write(f'Time: {total_game_time} s')
-file.close()

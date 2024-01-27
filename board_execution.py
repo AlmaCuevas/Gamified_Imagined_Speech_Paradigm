@@ -120,7 +120,7 @@ level_3 = [
 ]
 
 # Maze
-execution_boards=[level_1, level_2, level_3]
-start_execution_positions=[start_level_1, start_level_2, start_level_3]
+execution_boards=[level_2, level_3]
+start_execution_positions=[start_level_2, start_level_3]
 
 

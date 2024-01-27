@@ -22,8 +22,8 @@ HEIGHT = 900  # All sizes change when you change this. If you try to make this b
 level = copy.deepcopy(boards.pop(0))
 div_width = len(level[0])  # 33
 div_height = len(level)  # 33
-num1 = HEIGHT // div_height
-num2 = WIDTH // div_width
+yscale = HEIGHT // div_height
+xscale = WIDTH // div_width
 
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
@@ -63,8 +63,8 @@ arrow_y = [80, 80, 50, 110]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
 
 ## Positions and other
 start = start_positions.pop(0)
-player_x = num2 * start[0] - int(num2 / 2) + 2  # 450
-player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
+player_x = xscale * start[0] - int(xscale / 2) + 2  # 450
+player_y = yscale * start[1] - int(yscale / 2) + 2  # 640
 direction = start[2]
 counter = 0
 flicker = False
@@ -118,24 +118,24 @@ def check_collisions(scor, power, power_count, last_activate_turn_tile):
     if 0 < player_x < 870:
         for mod in mods:
             for mod_2 in mods:
-                if level[(center_y + mod) // num1][(center_x + mod_2) // num2] in [
+                if level[(center_y + mod) // yscale][(center_x + mod_2) // xscale] in [
                     5,
                     6,
                     7,
                     8,
-                ] and level[(center_y - mod) // num1][(center_x - mod_2) // num2] in [
+                ] and level[(center_y - mod) // yscale][(center_x - mod_2) // xscale] in [
                     5,
                     6,
                     7,
                     8,
                 ]:  # arc numbers
-                    level[center_y // num1][center_x // num2] = -1
-                    last_activate_turn_tile = [center_y // num1, center_x // num2]
-        if level[center_y // num1][center_x // num2] == 1:
-            level[center_y // num1][center_x // num2] = 0
+                    level[center_y // yscale][center_x // xscale] = -1
+                    last_activate_turn_tile = [center_y // yscale, center_x // xscale]
+        if level[center_y // yscale][center_x // xscale] == 1:
+            level[center_y // yscale][center_x // xscale] = 0
             scor += 10
-        if level[center_y // num1][center_x // num2] == 2:
-            level[center_y // num1][center_x // num2] = 0
+        if level[center_y // yscale][center_x // xscale] == 2:
+            level[center_y // yscale][center_x // xscale] = 0
             scor += 50
             power = True
             power_count = 0
@@ -149,30 +149,30 @@ def draw_board():
                 pygame.draw.circle(
                     screen,
                     "white",
-                    (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
+                    (j * xscale + (0.5 * xscale), i * yscale + (0.5 * yscale)),
                     4,
                 )
             if level[i][j] == 2 and not flicker:
                 pygame.draw.circle(
                     screen,
                     "white",
-                    (j * num2 + (0.5 * num2), i * num1 + (0.5 * num1)),
+                    (j * xscale + (0.5 * xscale), i * yscale + (0.5 * yscale)),
                     10,
                 )
             if level[i][j] == 3:
                 pygame.draw.line(
                     screen,
                     color,
-                    (j * num2 + (0.5 * num2), i * num1),
-                    (j * num2 + (0.5 * num2), i * num1 + num1),
+                    (j * xscale + (0.5 * xscale), i * yscale),
+                    (j * xscale + (0.5 * xscale), i * yscale + yscale),
                     3,
                 )
             if level[i][j] == 4:
                 pygame.draw.line(
                     screen,
                     color,
-                    (j * num2, i * num1 + (0.5 * num1)),
-                    (j * num2 + num2, i * num1 + (0.5 * num1)),
+                    (j * xscale, i * yscale + (0.5 * yscale)),
+                    (j * xscale + xscale, i * yscale + (0.5 * yscale)),
                     3,
                 )
             if level[i][j] == 5:
@@ -180,10 +180,10 @@ def draw_board():
                     screen,
                     color,
                     [
-                        (j * num2 - (num2 * 0.4)) - 2,
-                        (i * num1 + (0.5 * num1)),
-                        num2,
-                        num1,
+                        (j * xscale - (xscale * 0.4)) - 2,
+                        (i * yscale + (0.5 * yscale)),
+                        xscale,
+                        yscale,
                     ],
                     0,
                     PI / 2,
@@ -193,7 +193,7 @@ def draw_board():
                 pygame.draw.arc(
                     screen,
                     color,
-                    [(j * num2 + (num2 * 0.5)), (i * num1 + (0.5 * num1)), num2, num1],
+                    [(j * xscale + (xscale * 0.5)), (i * yscale + (0.5 * yscale)), xscale, yscale],
                     PI / 2,
                     PI,
                     3,
@@ -202,7 +202,7 @@ def draw_board():
                 pygame.draw.arc(
                     screen,
                     color,
-                    [(j * num2 + (num2 * 0.5)), (i * num1 - (0.4 * num1)), num2, num1],
+                    [(j * xscale + (xscale * 0.5)), (i * yscale - (0.4 * yscale)), xscale, yscale],
                     PI,
                     3 * PI / 2,
                     3,
@@ -212,10 +212,10 @@ def draw_board():
                     screen,
                     color,
                     [
-                        (j * num2 - (num2 * 0.4)) - 2,
-                        (i * num1 - (0.4 * num1)),
-                        num2,
-                        num1,
+                        (j * xscale - (xscale * 0.4)) - 2,
+                        (i * yscale - (0.4 * yscale)),
+                        xscale,
+                        yscale,
                     ],
                     3 * PI / 2,
                     2 * PI,
@@ -225,15 +225,15 @@ def draw_board():
                 pygame.draw.line(
                     screen,
                     "white",
-                    (j * num2, i * num1 + (0.5 * num1)),
-                    (j * num2 + num2, i * num1 + (0.5 * num1)),
+                    (j * xscale, i * yscale + (0.5 * yscale)),
+                    (j * xscale + xscale, i * yscale + (0.5 * yscale)),
                     3,
                 )
             if level[i][j] == -1:
                 pygame.draw.rect(
                     screen,
                     "yellow",
-                    [j * num2 + (-0.5 * num2), i * num1 + (-0.5 * num1), 60, 60],
+                    [j * xscale + (-0.5 * xscale), i * yscale + (-0.5 * yscale), 60, 60],
                     border_radius=10,
                 )
 
@@ -265,39 +265,39 @@ def check_position(centerx, centery):
     # check collisions based on center x and center y of player +/- fudge number
     if centerx // 30 < 29:
         if direction == 0:
-            if level[centery // num1][(centerx - num3) // num2] < 3:
+            if level[centery // yscale][(centerx - num3) // xscale] < 3:
                 turns[1] = True
         if direction == 1:
-            if level[centery // num1][(centerx + num3) // num2] < 3:
+            if level[centery // yscale][(centerx + num3) // xscale] < 3:
                 turns[0] = True
         if direction == 2:
-            if level[(centery + num3) // num1][centerx // num2] < 3:
+            if level[(centery + num3) // yscale][centerx // xscale] < 3:
                 turns[3] = True
         if direction == 3:
-            if level[(centery - num3) // num1][centerx // num2] < 3:
+            if level[(centery - num3) // yscale][centerx // xscale] < 3:
                 turns[2] = True
 
         if direction == 2 or direction == 3:
-            if 12 <= centerx % num2 <= 18:
-                if level[(centery + num3) // num1][centerx // num2] < 3:
+            if 12 <= centerx % xscale <= 18:
+                if level[(centery + num3) // yscale][centerx // xscale] < 3:
                     turns[3] = True
-                if level[(centery - num3) // num1][centerx // num2] < 3:
+                if level[(centery - num3) // yscale][centerx // xscale] < 3:
                     turns[2] = True
-            if 12 <= centery % num1 <= 18:
-                if level[centery // num1][(centerx - num2) // num2] < 3:
+            if 12 <= centery % yscale <= 18:
+                if level[centery // yscale][(centerx - xscale) // xscale] < 3:
                     turns[1] = True
-                if level[centery // num1][(centerx + num2) // num2] < 3:
+                if level[centery // yscale][(centerx + xscale) // xscale] < 3:
                     turns[0] = True
         if direction == 0 or direction == 1:
-            if 12 <= centerx % num2 <= 18:
-                if level[(centery + num1) // num1][centerx // num2] < 3:
+            if 12 <= centerx % xscale <= 18:
+                if level[(centery + yscale) // yscale][centerx // xscale] < 3:
                     turns[3] = True
-                if level[(centery - num1) // num1][centerx // num2] < 3:
+                if level[(centery - yscale) // yscale][centerx // xscale] < 3:
                     turns[2] = True
-            if 12 <= centery % num1 <= 18:
-                if level[centery // num1][(centerx - num3) // num2] < 3:
+            if 12 <= centery % yscale <= 18:
+                if level[centery // yscale][(centerx - num3) // xscale] < 3:
                     turns[1] = True
-                if level[centery // num1][(centerx + num3) // num2] < 3:
+                if level[centery // yscale][(centerx + num3) // xscale] < 3:
                     turns[0] = True
     else:
         turns[0] = True
@@ -387,8 +387,8 @@ while run:
                 lives -= 1
                 startup_counter = 0
                 start = start_positions.pop(0)
-                player_x = num2 * start[0] - int(num2 / 2) + 2  # 450
-                player_y = num1 * start[1] - int(num1 / 2) + 2  # 640
+                player_x = xscale * start[0] - int(xscale / 2) + 2  # 450
+                player_y = yscale * start[1] - int(yscale / 2) + 2  # 640
                 direction = start[2]
                 direction_command = 0
                 score = 0
