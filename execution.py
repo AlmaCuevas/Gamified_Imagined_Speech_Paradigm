@@ -66,6 +66,7 @@ cookie = pygame.transform.scale(pygame.image.load(f'assets/extras_images/cookie.
 sound_thud = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'thud.mp3'))
 sound_go = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'go.mp3'))
 sound_win = pygame.mixer.Sound(os.path.join(ASSETS_PATH, 'sounds', 'finish a level.mp3'))
+sound_win.set_volume(0.5)
 
 ## Positions
 start = start_execution_positions[current_level]
@@ -89,13 +90,13 @@ counter = 0
 flicker = False
 game_over = False
 game_won = False
+play_won_flag = True
 last_activate_turn_tile = [4, 4] # Check that in all levels this is a 0 pixel
 
 
 def draw_misc():
     gameover_text = font.render("¡Nivel Completado!", True, "red")
     if game_over:
-        sound_win.play()
         pygame.draw.rect(screen, "gray", [WIDTH*.05, HEIGHT*.1, WIDTH*.9, HEIGHT*.8], 0, 10)
         pygame.draw.rect(screen, "green", [WIDTH*.1, HEIGHT*.2, WIDTH*.8, HEIGHT*.6], 0, 10)
         gameover_text2 = font.render("¡Gracias por participar!", True, "red")
@@ -325,6 +326,9 @@ while run:
         for x in xs
     ]
     if 2 not in flat_level_list:
+        if play_won_flag:
+            sound_win.play()
+            play_won_flag = False
         if len(start_execution_positions) == current_level+1:
             game_over = True
         game_won = True
@@ -375,6 +379,7 @@ while run:
                 file.close()
                 run = False
             elif event.key == pygame.K_SPACE and game_won:
+                play_won_flag = True
                 first_movement = True
                 draw_misc()
                 pygame.display.flip()
