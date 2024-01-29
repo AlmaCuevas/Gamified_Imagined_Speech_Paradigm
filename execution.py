@@ -12,7 +12,8 @@ import os
 ASSETS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
 
 dev_mode = True
-# TODO: In theory is done, check this is true: The data should be saved only if game_over, not if I just quit the game
+# TODO:
+
 if not dev_mode:
     # LSL COMMUNICATION
     def lsl_mrk_outlet(name):
@@ -45,7 +46,9 @@ fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
 font = pygame.font.Font("freesansbold.ttf", 30)
 color = "white"
 PI = math.pi
-
+total_game_time = []
+total_game_turns = []
+level_turns = []
 
 ## Images import
 player_images = [pygame.transform.scale(pygame.image.load(f'assets/extras_images/right.png'), (xscale, yscale)),
@@ -92,7 +95,7 @@ game_over = False
 game_won = False
 play_won_flag = True
 last_activate_turn_tile = [4, 4] # Check that in all levels this is a 0 pixel
-
+time_to_corner = 0
 
 def draw_misc():
     gameover_text = font.render("¡Nivel Completado!", True, "red")
@@ -111,25 +114,24 @@ def draw_misc():
         screen.blit(gameover_text, (xscale*13, HEIGHT//3))
         screen.blit(gameover_text2, (xscale*9, HEIGHT//2))
 
-def check_collisions(last_activate_turn_tile, player_speed):
+def check_collisions(last_activate_turn_tile, player_speed, time_to_corner):
     if 0 < player_x < WIDTH-xscale*2:
         corner_check=copy.deepcopy(turns_allowed)
         corner_check[direction] = False
         if 1 <= level[center_y // yscale][center_x // xscale] <= 2:
             level[center_y // yscale][center_x // xscale] = 0
         if sum(corner_check)>=2 or corner_check==turns_allowed:
-            if level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] != -1:
-                print('thud')
+            if level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] != -1 and time_to_corner > 10:
                 sound_thud.play()
                 level[center_y // yscale][center_x // xscale] = -1
                 last_activate_turn_tile = [center_y // yscale, center_x // xscale]
                 player_speed = 0
         elif level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] == -1:
-            print('play')
             sound_go.play()
             level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
             player_speed = original_speed
-    return last_activate_turn_tile, player_speed
+            time_to_corner = 0
+    return last_activate_turn_tile, player_speed, time_to_corner
 
 
 
@@ -235,58 +237,48 @@ def draw_player(last_direction):
 
 def check_position(centerx, centery):
     turns = [False, False, False, False] # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-    half_scale = xscale // 2
-    # check collisions based on center x and center y of player +/- fudge number
-    if centerx // div_width < div_width-1:
-        if direction == 0:
-            if level[centery // yscale][(centerx - half_scale) // xscale] < 3:
-                turns[1] = True
-        elif direction == 1:
-            if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
-                turns[0] = True
-        elif direction == 2:
+    half_scale = xscale // 2 + 5
+    if direction == 2 or direction == 3:
+        if xscale//3 <= centerx % xscale <= xscale:
             if level[(centery + half_scale) // yscale][centerx // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'pink', (centerx, (centery + half_scale)), 20, 10)
                 turns[3] = True
-        elif direction == 3:
-            if level[(centery - half_scale) // yscale][centerx // xscale] < 3:
+            if level[(centery - half_scale - 10) // yscale][centerx // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'pink', (centerx, (centery - half_scale - 10)), 20, 10)
                 turns[2] = True
-
-        if direction == 2 or direction == 3:
-            if xscale//3 <= centerx % xscale <= xscale:
-                if level[(centery + half_scale) // yscale][centerx // xscale] < 3:
-                    turns[3] = True
-                if level[(centery - half_scale - 10) // yscale][centerx // xscale] < 3:
-                    turns[2] = True
-            if yscale//3 <= centery % yscale <= yscale:
-                if level[centery // yscale][(centerx - xscale) // xscale] < 3:
-                    turns[1] = True
-                if level[centery // yscale][(centerx + xscale) // xscale] < 3:
-                    turns[0] = True
-        if direction == 0 or direction == 1:
-            if xscale//3 <= centerx % xscale <= xscale:
-                if level[(centery + yscale) // yscale][centerx // xscale] < 3:
-                    turns[3] = True
-                if level[(centery - yscale) // yscale][centerx // xscale] < 3:
-                    turns[2] = True
-            if yscale//3 <= centery % yscale <= yscale:
-                if level[centery // yscale][(centerx - half_scale - 10) // xscale] < 3:
-                    turns[1] = True
-                if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
-                    turns[0] = True
-    else:
-        turns[0] = True
-        turns[1] = True
+        if yscale//3 <= centery % yscale <= yscale:
+            if level[centery // yscale][(centerx - xscale) // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'pink', (centerx - xscale, centery), 20, 10)
+                turns[1] = True
+            if level[centery // yscale][(centerx + xscale) // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'pink', (centerx + xscale, centery), 20, 10)
+                turns[0] = True
+    elif direction == 0 or direction == 1:
+        if xscale//3 <= centerx % xscale <= xscale:
+            if level[(centery + yscale) // yscale][centerx // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'green', (centerx, centery + yscale), 20, 10)
+                turns[3] = True
+            if level[(centery - yscale) // yscale][centerx // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'green', (centerx, centery - yscale), 20, 10)
+                turns[2] = True
+        if yscale//3 <= centery % yscale <= yscale:
+            if level[centery // yscale][(centerx - half_scale - 8) // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'white', ((centerx - half_scale - 8), centery), 20, 10)
+                turns[1] = True
+            if level[centery // yscale][(centerx + half_scale) // xscale] < 3:
+                if dev_mode: pygame.draw.circle(screen, 'red', ((centerx + half_scale), centery), 20, 10)
+                turns[0] = True
     return turns
 
 
 def move_player(play_x, play_y):
     # r, l, u, d
     # If current direction is right and right is allowed, move right
-    if direction == 0 and turns_allowed[0]: 
+    if direction == 0 and turns_allowed[0]:
         play_x += player_speed
     elif direction == 1 and turns_allowed[1]:
         play_x -= player_speed
-    if direction == 2 and turns_allowed[2]:
+    elif direction == 2 and turns_allowed[2]:
         play_y -= player_speed
     elif direction == 3 and turns_allowed[3]:
         play_y += player_speed
@@ -304,7 +296,7 @@ while run:
     else:
         counter = 0
         flicker = True
-    if startup_counter < 180 and not game_over and not game_won:
+    if startup_counter < 180 and not game_over and not game_won and not dev_mode:
         moving = False
         startup_counter += 1
     elif startup_counter < fps*20 and not game_won and not dev_mode:
@@ -328,19 +320,13 @@ while run:
     if 2 not in flat_level_list:
         if play_won_flag:
             sound_win.play()
+            total_game_time.append('{:.2f}'.format(time.time() - start_time))
+            total_game_turns.append(level_turns[1:])
             play_won_flag = False
         if len(start_execution_positions) == current_level+1:
             game_over = True
         game_won = True
 
-    mods = [xscale // 2, xscale // -2]
-
-    if dev_mode:
-        # Collider viewer
-        player_circle = pygame.draw.circle(screen, 'pink', (center_x+mods[0], center_y+mods[0]), 20, 10)
-        player_circle_2 = pygame.draw.circle(screen, 'pink', (center_x + mods[0], center_y+mods[1]), 20, 10)
-        player_circle_3 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[0]), 20, 10)
-        player_circle_4 = pygame.draw.circle(screen, 'pink', (center_x + mods[1], center_y + mods[1]), 20, 10)
     last_direction = draw_player(last_direction)
     draw_misc()
 
@@ -349,33 +335,39 @@ while run:
     if moving:
         player_x, player_y = move_player(player_x, player_y)
 
-    last_activate_turn_tile, player_speed = check_collisions(last_activate_turn_tile, player_speed)
+    last_activate_turn_tile, player_speed, time_to_corner = check_collisions(last_activate_turn_tile, player_speed, time_to_corner)
 
+    time_to_corner += 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         elif event.type == pygame.KEYDOWN and player_speed == 0:
             if event.key == pygame.K_RIGHT and turns_allowed[0]:
+                level_turns.append(direction)
                 direction_command = 0
                 player_speed = original_speed
             elif event.key == pygame.K_LEFT and turns_allowed[1]:
+                level_turns.append(direction)
                 direction_command = 1
                 player_speed = original_speed
             elif event.key == pygame.K_UP and turns_allowed[2]:
+                level_turns.append(direction)
                 direction_command = 2
                 player_speed = original_speed
             elif event.key == pygame.K_DOWN and turns_allowed[3]:
+                level_turns.append(direction)
                 direction_command = 3
                 player_speed = original_speed
             if event.key == pygame.K_SPACE and game_over:
-                end_time = time.time()
-                total_game_time = '{:.2f}'.format(end_time - start_time)
-
+                total_game_time.append('{:.2f}'.format(time.time() - start_time))
+                total_game_turns.append(level_turns[1:])
                 filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
 
                 file = open(os.path.join(ASSETS_PATH, 'game_saved_files', filename), 'w')
-                file.write(f'Time: {total_game_time} s')
+                file.write('tutorial_1, tutorial_2, tutorial_3, singleplayer_1, singleplayer_2\n')
+                file.write(f'{total_game_time}\n')
+                file.write(f'{total_game_turns}\n')
                 file.close()
                 run = False
             elif event.key == pygame.K_SPACE and game_won:
@@ -385,6 +377,12 @@ while run:
                 pygame.display.flip()
                 startup_counter = 0
                 current_level += 1
+                if dev_mode:
+                    player_speed = 5
+                    original_speed = 5
+                else:
+                    player_speed = 1
+                    original_speed = 1
                 if current_level < len(execution_boards):
                     level = copy.deepcopy(execution_boards[current_level])
                     start = start_execution_positions[current_level]
@@ -393,6 +391,8 @@ while run:
                     direction = start[2]
                     direction_command = start[2]
                 game_won = False
+                start_time = time.time()
+                level_turns = []
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT and direction_command == 0:
