@@ -362,13 +362,6 @@ while run:
             if event.key == pygame.K_SPACE and game_over:
                 total_game_time.append('{:.2f}'.format(time.time() - start_time))
                 total_game_turns.append(level_turns[1:])
-                filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
-
-                file = open(os.path.join(ASSETS_PATH, 'game_saved_files', filename), 'w')
-                file.write('tutorial_1, tutorial_2, tutorial_3, singleplayer_1, singleplayer_2\n')
-                file.write(f'{total_game_time}\n')
-                file.write(f'{total_game_turns}\n')
-                file.close()
                 run = False
             elif event.key == pygame.K_SPACE and game_won:
                 play_won_flag = True
@@ -409,3 +402,13 @@ while run:
             direction = direction_index
     pygame.display.flip()
 pygame.quit()
+
+# Here in case someone decides to finish the game (NOT RECOMMENDED FOR ANALYSIS).
+# If the user doesn't want to continue, at least the progress stays.
+filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
+
+file = open(os.path.join(ASSETS_PATH, 'game_saved_files', filename), 'w')
+file.write('tutorial_1, tutorial_2, tutorial_3, singleplayer_1, singleplayer_2\n')
+file.write(f'{total_game_time}\n')
+file.write(f'{total_game_turns}\n')
+file.close()
