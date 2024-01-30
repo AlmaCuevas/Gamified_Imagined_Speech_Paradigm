@@ -4,7 +4,6 @@ from board import boards_tutorial, start_positions_tutorial, commands_list_tutor
 import pygame
 import math
 import time
-import pyautogui
 
 
 # GAME

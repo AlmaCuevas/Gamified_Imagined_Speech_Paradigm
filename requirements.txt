@@ -1,3 +1,2 @@
 pygame==2.5.2
 pylsl==1.16.2
-pyautogui==0.9.54
