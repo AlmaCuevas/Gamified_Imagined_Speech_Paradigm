@@ -73,15 +73,18 @@ class MainMenu(Menu):
     def check_input(self):
         self.move_cursor()
         if self.game.START_KEY:
+            sound_start = pygame.mixer.Sound('assets/sounds/start_sound.mp3')
+            sound_start.set_volume(0.5)
+            sound_start.play()
             if self.state == 'Tutorial':
                 self.game.playing = True
-                execution.play_game()
+                execution.play_game(game_mode='Tutorial')
             elif self.state == 'Multiplayer':
                 self.game.playing = True
-                execution.play_game()
+                execution.play_game(game_mode='Multiplayer')
             elif self.state == 'Singleplayer':
                 self.game.playing = True
-                execution.play_game()
+                execution.play_game(game_mode='Singleplayer')
             elif self.state == 'Credits':
                 self.game.curr_menu = self.game.credits
             self.run_display = False
