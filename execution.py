@@ -1,6 +1,8 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
 import copy
 from datetime import datetime
+import collections
+import random
 
 from board_execution import multiplayer_execution_boards, multiplayer_player_1_start_execution_positions, multiplayer_player_2_start_execution_positions, singleplayer_start_execution_positions, singleplayer_execution_boards, tutorial_player_1_start_execution_positions, tutorial_execution_boards
 import pygame
@@ -12,9 +14,29 @@ import os
 # The report file will only be saved when the game finishes without quitting.
 # You don't have to close or open a new game to select a different mode.
 
+# TODO: When used with key arrows there are no bugs. If I use the dev_mode = False, it has double answers or getes stuck.
+
+# TODO: Once you have that, send the EEG piece to the processing and receive the answer (in execution version)
+# TODO: Run the full calibration with training and then testing with executions (both multiplayer and singleplayer)
+# TODO: Is the calibration good? Should I keep it? Should I change it? I am more incline to change it to adapt to the processing. I don't know if its going to be helpful when sending the signal for processing in rael time.
+
+
 # TODO [optional]: Avoid the thud sound at the beginnning of the game, maybe a bool? The bool of 'moving'?
-# TODO: With the interface, is it better mrkstream_allowed_turn_out or mrkstream_1_allowed_turn_out + mrkstream_2_allowed_turn_out?
-# TODO: With the interface, how to send the commands of movement and receive them here? How to replace the keys? How to keep using keys when dev_mode=True?
+# TODO: With the interface, how to send the commands of movement and receive them here? How to replace the keys (arrows)? How to keep using keys when dev_mode=True?
+
+# LSL COMMUNICATION
+def lsl_mrk_outlet(name, number_subject=''):
+    info = pylsl.stream_info(name + str(number_subject), 'Markers', 1, 0, pylsl.cf_string, 'ID0123456789')
+    outlet = pylsl.stream_outlet(info, 1, 1)
+    print(f'Brain Command created result outlet: {name}, for Player {number_subject}.')
+    return outlet
+
+
+def lsl_inlet(name, number_subject=''):
+    info = pylsl.resolve_stream('name', name + str(number_subject))
+    inlet = pylsl.stream_inlet(info[0], recover=False)
+    print(f'Brain Command has received the {info[0].type()} inlet: {name}, for Player {number_subject}.')
+    return inlet
 
 def play_game(game_mode: str):
     ASSETS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
@@ -32,18 +54,22 @@ def play_game(game_mode: str):
         player_2_start_execution_positions = multiplayer_player_2_start_execution_positions # It doesn't matter
         execution_boards = singleplayer_execution_boards
 
-
-    dev_mode = True
+    dev_mode = False
 
     if not dev_mode:
-        # LSL COMMUNICATION
-        def lsl_mrk_outlet(name):
-            info = pylsl.stream_info(name, 'Markers', 1, 0, pylsl.cf_string, 'ID66666666')
-            outlet = pylsl.stream_outlet(info, 1, 1)
-            print('pacman created result outlet.')
-            return outlet
+        mrkstream_out = lsl_mrk_outlet('Task_Markers')  # important this is first
 
-        mrkstream_allowed_turn_out = lsl_mrk_outlet('Allowed_Turn_Markers')  # important this is first
+        # Wait for a marker, then start recording EEG data
+        start_time_1 = 0
+        data_1 = collections.deque()
+        prediction_movement_1_out = lsl_mrk_outlet('Result', 1)
+        eeg_1_in = lsl_inlet('player', 1)  # Don't use special characters or uppercase for the name
+        if game_mode == 'Multiplayer':
+            start_time_2 = 0
+            prediction_movement_2_out = lsl_mrk_outlet('Result', 2)
+            eeg_2_in = lsl_inlet('player', 2)  # Don't use special characters or uppercase for the name
+            data_2 = collections.deque()
+
 
     # GAME
     pygame.init()
@@ -94,6 +120,7 @@ def play_game(game_mode: str):
     player_2_direction: int = start_2[2]
     player_2_last_direction: int = start_2[2]
     player_2_direction_command: int = start_2[2]
+    prediction_movement_2: int = start_2[2]
     player_2_last_activate_turn_tile: list[int] = [4, 4]
     player_2_time_to_corner: int = 0
 
@@ -130,6 +157,7 @@ def play_game(game_mode: str):
     player_1_player_y: int = int(start_1[1] * yscale)
     player_1_direction: int = start_1[2]
     player_1_last_direction: int = start_1[2]
+    prediction_movement_1: int = start_1[2]
 
     ## Other
     player_1_direction_command: int = start_1[2]
@@ -185,6 +213,7 @@ def play_game(game_mode: str):
     def check_collisions(last_activate_turn_tile, player_speed, time_to_corner, turns_allowed, direction, center_x,
                          center_y, level, player_num):
         cookie_winner_num = 0
+        start_time = 0
         if player_num == 2:
             right_volume = 0
             left_volume = 1
@@ -201,17 +230,19 @@ def play_game(game_mode: str):
         if sum(corner_check) >= 2 or corner_check == turns_allowed:
             if level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] != -1 * player_num and time_to_corner > 10:
                 channel.play(sound_thud)
+                start_time = time.time()
                 channel.set_volume(right_volume, left_volume)
                 level[center_y // yscale][center_x // xscale] = -1 * player_num
                 last_activate_turn_tile = [center_y // yscale, center_x // xscale]
                 player_speed = 0
         elif level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] == -1 * player_num:
             channel.play(sound_go)
+            if not dev_mode: mrkstream_out.push_sample(pylsl.vectorstr([f'end_corner_{player_num}']))
             channel.set_volume(right_volume, left_volume)
             level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
             player_speed = original_speed
             time_to_corner = 0
-        return last_activate_turn_tile, player_speed, time_to_corner, level, cookie_winner_num
+        return last_activate_turn_tile, player_speed, time_to_corner, level, cookie_winner_num, start_time
 
     def draw_player(direction, last_direction, player_x, player_y, player_images):
         # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
@@ -380,10 +411,8 @@ def play_game(game_mode: str):
         else:
             counter = 0
             flicker = True
-        if startup_counter < 180 and not game_over and not game_won and not dev_mode:
-            moving = False
-            startup_counter += 1
-        elif startup_counter < fps*20 and not game_won and not dev_mode:
+
+        if startup_counter < 60 and not game_over and not game_won and not dev_mode:
             moving = False
             startup_counter += 1
         else:
@@ -399,158 +428,192 @@ def play_game(game_mode: str):
         else:
             level = draw_board(level, color, player_1_center_x, player_1_center_y)
 
-
-        player_1_last_direction = draw_player(player_1_direction, player_1_last_direction, player_1_player_x, player_1_player_y, player_1_images)
-        if game_mode == 'Multiplayer': player_2_last_direction = draw_player(player_2_direction, player_2_last_direction, player_2_player_x, player_2_player_y, player_2_images)
-
-        draw_misc(cookie_winner[-1:], game_mode)
-
-        player_1_turns_allowed = check_position(player_1_direction, player_1_center_x, player_1_center_y, level)
-        if game_mode == 'Multiplayer': player_2_turns_allowed = check_position(player_2_direction, player_2_center_x, player_2_center_y, level)
-
-        if dev_mode:
-            mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([f'player_2_turns_allowed:{player_1_turns_allowed}')]))
-            if game_mode == 'Multiplayer': mrkstream_allowed_turn_out.push_sample(
-                pylsl.vectorstr([f'player_2_turns_allowed:{player_2_turns_allowed}')]))
         if moving:
+            player_1_last_direction = draw_player(player_1_direction, player_1_last_direction, player_1_player_x, player_1_player_y, player_1_images)
+            if game_mode == 'Multiplayer': player_2_last_direction = draw_player(player_2_direction, player_2_last_direction, player_2_player_x, player_2_player_y, player_2_images)
+
+            draw_misc(cookie_winner[-1:], game_mode)
+
+            player_1_turns_allowed = check_position(player_1_direction, player_1_center_x, player_1_center_y, level)
+            if game_mode == 'Multiplayer': player_2_turns_allowed = check_position(player_2_direction, player_2_center_x, player_2_center_y, level)
+
+            if not dev_mode:
+                movement_option = [0, 1, 2, 3]
+                eeg_1, t_eeg_1 = eeg_1_in.pull_sample(timeout=0)
+                if time.time() - start_time_1 > 1400 and player_1_speed == 0: # Duration is 1.4s
+
+                    ## HERE IS WHERE THE PROCESSING CALL GO! Replace the two lines below
+                    allowed_1_movement_random = [x for x, flag in zip(movement_option, player_1_turns_allowed) if flag]
+                    prediction_movement_1 = allowed_1_movement_random[random.randint(0, len(allowed_1_movement_random)-1)] # exclusive range
+                    print(f'Player 1. Classifier returned: {prediction_movement_1}')
+                    prediction_movement_1_out.push_sample(pylsl.vectorstr([str(prediction_movement_1)]))
+
+                    player_1_level_turns.append(player_1_direction_command)
+                    player_1_direction_command = prediction_movement_1
+                    player_1_speed = original_speed
+                    data_1 = collections.deque()
+                else:
+                    if eeg_1 is not None:
+                        data_1.append([t_eeg_1, *eeg_1])
+                if game_mode == 'Multiplayer':
+                    eeg_2, t_eeg_2 = eeg_2_in.pull_sample(timeout=0)
+                    if time.time() - start_time_2 > 1400 and player_2_speed == 0:
+                        ## HERE IS WHERE THE PROCESSING CALL GO! Replace the two lines below
+                        allowed_2_movement_random = [x for x, flag in zip(movement_option, player_2_turns_allowed) if flag]
+                        prediction_movement_2 = allowed_2_movement_random[
+                            random.randint(0, len(allowed_2_movement_random) - 1)]  # exclusive range
+                        print(f'Player 2. Classifier returned: {prediction_movement_2}')
+                        prediction_movement_2_out.push_sample(pylsl.vectorstr([str(prediction_movement_2)]))
+                        data_2 = collections.deque()
+                        player_2_speed = original_speed
+
+                        player_2_level_turns.append(player_2_direction_command)
+                        player_2_direction_command = prediction_movement_2
+
+                    else:
+                        if eeg_2 is not None:
+                            data_2.append([t_eeg_2, *eeg_2])
+
             player_1_player_x, player_1_player_y = move_player(player_1_direction, player_1_turns_allowed, player_1_player_x, player_1_player_y, player_1_speed)
             if game_mode == 'Multiplayer': player_2_player_x, player_2_player_y = move_player(player_2_direction, player_2_turns_allowed, player_2_player_x, player_2_player_y, player_2_speed)
 
-        player_1_last_activate_turn_tile, player_1_speed, player_1_time_to_corner, level, cookie_winner_1_num = check_collisions(player_1_last_activate_turn_tile, player_1_speed, player_1_time_to_corner, player_1_turns_allowed, player_1_direction, player_1_center_x, player_1_center_y, level, 1)
-        if game_mode == 'Multiplayer': player_2_last_activate_turn_tile, player_2_speed, player_2_time_to_corner, level, cookie_winner_2_num = check_collisions(player_2_last_activate_turn_tile, player_2_speed, player_2_time_to_corner, player_2_turns_allowed, player_2_direction, player_2_center_x, player_2_center_y, level, 2)
+            player_1_last_activate_turn_tile, player_1_speed, player_1_time_to_corner, level, cookie_winner_1_num, start_time_1 = check_collisions(player_1_last_activate_turn_tile, player_1_speed, player_1_time_to_corner, player_1_turns_allowed, player_1_direction, player_1_center_x, player_1_center_y, level, 1)
+            if game_mode == 'Multiplayer': player_2_last_activate_turn_tile, player_2_speed, player_2_time_to_corner, level, cookie_winner_2_num, start_time_2 = check_collisions(player_2_last_activate_turn_tile, player_2_speed, player_2_time_to_corner, player_2_turns_allowed, player_2_direction, player_2_center_x, player_2_center_y, level, 2)
 
-        game_won = False
-        flat_level_list = [
-            x
-            for xs in level
-            for x in xs
-        ]
-        if cookies_at_the_beginning != flat_level_list.count(2):
-            if play_won_flag:
-                if cookie_winner_1_num:
-                    cookie_winner.append(cookie_winner_1_num)
-                elif cookie_winner_2_num and game_mode == 'Multiplayer':
-                    cookie_winner.append(cookie_winner_2_num)
-                sound_win.play()
-                total_game_time.append('{:.2f}'.format(time.time() - start_time))
-                player_1_total_game_turns.append(player_1_level_turns[1:])
-                if game_mode == 'Multiplayer': player_2_total_game_turns.append(player_2_level_turns[1:])
-                play_won_flag = False
-            if len(player_1_start_execution_positions) == current_level+1:
-                game_over = True
-            game_won = True
-
-        player_1_time_to_corner += 1
-        if game_mode == 'Multiplayer': player_2_time_to_corner += 1
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == pygame.KEYDOWN and (player_1_speed == 0 or player_2_speed == 0):
-                if event.key == pygame.K_RIGHT and player_1_turns_allowed[0]:
-                    player_1_level_turns.append(player_1_direction)
-                    player_1_direction_command = 0
-                    player_1_speed = original_speed
-                elif event.key == pygame.K_LEFT and player_1_turns_allowed[1]:
-                    player_1_level_turns.append(player_1_direction)
-                    player_1_direction_command = 1
-                    player_1_speed = original_speed
-                elif event.key == pygame.K_UP and player_1_turns_allowed[2]:
-                    player_1_level_turns.append(player_1_direction)
-                    player_1_direction_command = 2
-                    player_1_speed = original_speed
-                elif event.key == pygame.K_DOWN and player_1_turns_allowed[3]:
-                    player_1_level_turns.append(player_1_direction)
-                    player_1_direction_command = 3
-                    player_1_speed = original_speed
-
-                if game_mode == 'Multiplayer':
-                    if event.key == pygame.K_d and player_2_turns_allowed[0]:
-                        player_2_level_turns.append(player_2_direction)
-                        player_2_direction_command = 0
-                        player_2_speed = original_speed
-                    elif event.key == pygame.K_a and player_2_turns_allowed[1]:
-                        player_2_level_turns.append(player_2_direction)
-                        player_2_direction_command = 1
-                        player_2_speed = original_speed
-                    elif event.key == pygame.K_w and player_2_turns_allowed[2]:
-                        player_2_level_turns.append(player_2_direction)
-                        player_2_direction_command = 2
-                        player_2_speed = original_speed
-                    elif event.key == pygame.K_s and player_2_turns_allowed[3]:
-                        player_2_level_turns.append(player_2_direction)
-                        player_2_direction_command = 3
-                        player_2_speed = original_speed
-
-                if event.key == pygame.K_SPACE and game_over:
+            game_won = False
+            flat_level_list = [
+                x
+                for xs in level
+                for x in xs
+            ]
+            if cookies_at_the_beginning != flat_level_list.count(2):
+                if play_won_flag:
+                    if cookie_winner_1_num:
+                        cookie_winner.append(cookie_winner_1_num)
+                    elif cookie_winner_2_num and game_mode == 'Multiplayer':
+                        cookie_winner.append(cookie_winner_2_num)
+                    sound_win.play()
                     total_game_time.append('{:.2f}'.format(time.time() - start_time))
                     player_1_total_game_turns.append(player_1_level_turns[1:])
                     if game_mode == 'Multiplayer': player_2_total_game_turns.append(player_2_level_turns[1:])
+                    play_won_flag = False
+                if len(player_1_start_execution_positions) == current_level+1:
+                    game_over = True
+                game_won = True
+
+            player_1_time_to_corner += 1
+            if game_mode == 'Multiplayer': player_2_time_to_corner += 1
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     run = False
-                elif event.key == pygame.K_SPACE and game_won:
-                    play_won_flag = True
-                    startup_counter = 0
-                    current_level += 1
-                    if dev_mode:
-                        player_1_speed = 5
-                        if game_mode == 'Multiplayer': player_2_speed = 5
-                        original_speed = 5
-                    else:
-                        player_1_speed = 1
-                        if game_mode == 'Multiplayer': player_2_speed = 1
-                        original_speed = 1
-                    if current_level < len(execution_boards):
-                        level = copy.deepcopy(execution_boards[current_level])
-                        flat_level_list = [
-                            x
-                            for xs in level
-                            for x in xs
-                        ]
-                        cookies_at_the_beginning = flat_level_list.count(2)
-                        start_1 = player_1_start_execution_positions[current_level]
+                elif event.type == pygame.KEYDOWN and (player_1_speed == 0 or player_2_speed == 0) and dev_mode:
+                    if event.key == pygame.K_RIGHT and player_1_turns_allowed[0]:
+                        player_1_level_turns.append(player_1_direction)
+                        player_1_direction_command = 0
+                        player_1_speed = original_speed
+                    elif event.key == pygame.K_LEFT and player_1_turns_allowed[1]:
+                        player_1_level_turns.append(player_1_direction)
+                        player_1_direction_command = 1
+                        player_1_speed = original_speed
+                    elif event.key == pygame.K_UP and player_1_turns_allowed[2]:
+                        player_1_level_turns.append(player_1_direction)
+                        player_1_direction_command = 2
+                        player_1_speed = original_speed
+                    elif event.key == pygame.K_DOWN and player_1_turns_allowed[3]:
+                        player_1_level_turns.append(player_1_direction)
+                        player_1_direction_command = 3
+                        player_1_speed = original_speed
+
+                    if game_mode == 'Multiplayer':
+                        if event.key == pygame.K_d and player_2_turns_allowed[0]:
+                            player_2_level_turns.append(player_2_direction)
+                            player_2_direction_command = 0
+                            player_2_speed = original_speed
+                        elif event.key == pygame.K_a and player_2_turns_allowed[1]:
+                            player_2_level_turns.append(player_2_direction)
+                            player_2_direction_command = 1
+                            player_2_speed = original_speed
+                        elif event.key == pygame.K_w and player_2_turns_allowed[2]:
+                            player_2_level_turns.append(player_2_direction)
+                            player_2_direction_command = 2
+                            player_2_speed = original_speed
+                        elif event.key == pygame.K_s and player_2_turns_allowed[3]:
+                            player_2_level_turns.append(player_2_direction)
+                            player_2_direction_command = 3
+                            player_2_speed = original_speed
+
+                    if event.key == pygame.K_SPACE and game_over:
+                        total_game_time.append('{:.2f}'.format(time.time() - start_time))
+                        player_1_total_game_turns.append(player_1_level_turns[1:])
+                        if game_mode == 'Multiplayer': player_2_total_game_turns.append(player_2_level_turns[1:])
+                        run = False
+                    elif event.key == pygame.K_SPACE and game_won:
+                        play_won_flag = True
+                        startup_counter = 0
+                        current_level += 1
+                        if dev_mode:
+                            player_1_speed = 5
+                            if game_mode == 'Multiplayer': player_2_speed = 5
+                            original_speed = 5
+                        else:
+                            player_1_speed = 1
+                            if game_mode == 'Multiplayer': player_2_speed = 1
+                            original_speed = 1
+                        if current_level < len(execution_boards):
+                            level = copy.deepcopy(execution_boards[current_level])
+                            flat_level_list = [
+                                x
+                                for xs in level
+                                for x in xs
+                            ]
+                            cookies_at_the_beginning = flat_level_list.count(2)
+                            start_1 = player_1_start_execution_positions[current_level]
+                            if game_mode == 'Multiplayer':
+                                start_2 = player_2_start_execution_positions[current_level]
+                                player_2_direction = start_2[2]
+                                player_2_player_x = int(start_2[0] * xscale)
+                                player_2_player_y = int(start_2[1] * yscale)
+                                player_2_direction_command = start_2[2]
+                            player_1_direction = start_1[2]
+                            player_1_player_x = int(start_1[0] * xscale)
+                            player_1_player_y = int(start_1[1] * yscale)
+                            player_1_direction_command = start_1[2]
+                        game_won = False
+                        start_time = time.time()
+                        player_1_level_turns = []
+                        if game_mode == 'Multiplayer': player_2_level_turns = []
+                if dev_mode:
+                    if event.type == pygame.KEYUP:
+                        if event.key == pygame.K_RIGHT and player_1_direction_command == 0:
+                            player_1_direction_command = player_1_direction
+                        elif event.key == pygame.K_LEFT and player_1_direction_command == 1:
+                            player_1_direction_command = player_1_direction
+                        elif event.key == pygame.K_UP and player_1_direction_command == 2:
+                            player_1_direction_command = player_1_direction
+                        elif event.key == pygame.K_DOWN and player_1_direction_command == 3:
+                            player_1_direction_command = player_1_direction
+
                         if game_mode == 'Multiplayer':
-                            start_2 = player_2_start_execution_positions[current_level]
-                            player_2_direction = start_2[2]
-                            player_2_player_x = int(start_2[0] * xscale)
-                            player_2_player_y = int(start_2[1] * yscale)
-                            player_2_direction_command = start_2[2]
-                        player_1_direction = start_1[2]
-                        player_1_player_x = int(start_1[0] * xscale)
-                        player_1_player_y = int(start_1[1] * yscale)
-                        player_1_direction_command = start_1[2]
-                    game_won = False
-                    start_time = time.time()
-                    player_1_level_turns = []
-                    if game_mode == 'Multiplayer': player_2_level_turns = []
+                            if event.key == pygame.K_d and player_2_direction_command == 0:
+                                player_2_direction_command = player_2_direction
+                            elif event.key == pygame.K_a and player_2_direction_command == 1:
+                                player_2_direction_command = player_2_direction
+                            elif event.key == pygame.K_w and player_2_direction_command == 2:
+                                player_2_direction_command = player_2_direction
+                            elif event.key == pygame.K_s and player_2_direction_command == 3:
+                                player_2_direction_command = player_2_direction
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT and player_1_direction_command == 0:
-                    player_1_direction_command = player_1_direction
-                elif event.key == pygame.K_LEFT and player_1_direction_command == 1:
-                    player_1_direction_command = player_1_direction
-                elif event.key == pygame.K_UP and player_1_direction_command == 2:
-                    player_1_direction_command = player_1_direction
-                elif event.key == pygame.K_DOWN and player_1_direction_command == 3:
-                    player_1_direction_command = player_1_direction
-
+            for direction_index in range(0, 4):
+                if player_1_direction_command == direction_index and player_1_turns_allowed[direction_index]:
+                    player_1_direction = direction_index
                 if game_mode == 'Multiplayer':
-                    if event.key == pygame.K_d and player_2_direction_command == 0:
-                        player_2_direction_command = player_2_direction
-                    elif event.key == pygame.K_a and player_2_direction_command == 1:
-                        player_2_direction_command = player_2_direction
-                    elif event.key == pygame.K_w and player_2_direction_command == 2:
-                        player_2_direction_command = player_2_direction
-                    elif event.key == pygame.K_s and player_2_direction_command == 3:
-                        player_2_direction_command = player_2_direction
+                    if player_2_direction_command == direction_index and player_2_turns_allowed[direction_index]:
+                        player_2_direction = direction_index
 
-        for direction_index in range(0, 4):
-            if player_1_direction_command == direction_index and player_1_turns_allowed[direction_index]:
-                player_1_direction = direction_index
-            if game_mode == 'Multiplayer':
-                if player_2_direction_command == direction_index and player_2_turns_allowed[direction_index]:
-                    player_2_direction = direction_index
         pygame.display.flip()
     #pygame.quit()
+    mrkstream_out.push_sample(pylsl.vectorstr(['die']))
 
     filename = datetime.now().strftime('game_variables_%H%M_%m%d%Y.txt')
 

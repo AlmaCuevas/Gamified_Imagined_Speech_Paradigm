@@ -159,8 +159,8 @@ multiplayer_map = [
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
 
-start_multiplayer_mirrored_1 = [16, 31, 3]
-start_multiplayer_mirrored_2 = [32, 31, 3]
+start_multiplayer_mirrored_1 = [15, 31, 3]
+start_multiplayer_mirrored_2 = [31, 31, 3]
 
 multiplayer_mirrored_map = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
