@@ -1,61 +1,70 @@
-# Build Pac-Man from Scratch in Python with PyGame!!
+### Gamified Paradigm for Imagined Speech Acquisiton ###
+
 import copy
+import pygame
+import math
+import time
+import pylsl
 from board import (
     prompts_paradigm_SI,
     boards_paradigm_SI,
     start_positions_paradigm_SI,
     commands_list_board,
 )
-import pygame
-import math
-import time
-import pylsl
 
 
-# LSL COMMUNICATION
+## LSL COMMUNICATION
 def lsl_mrk_outlet(name):
+    """
+    Open an Lab Streaming Layer (LSL) outlet
+
+    Args:
+        name: Name of the outlet
+
+    Returns:
+        outlet: The opened LSL outlet
+    """
     info = pylsl.stream_info(name, "Markers", 1, 0, pylsl.cf_string, "ID66666666")
     outlet = pylsl.stream_outlet(info, 1, 1)
-    print("pacman created result outlet.")
+    print("Experimental paradigm created result outlet.")
     return outlet
 
+# Important this is first
+mrkstream_allowed_turn_out = lsl_mrk_outlet("PyGame - Paradgima Experimental")  
 
-mrkstream_allowed_turn_out = lsl_mrk_outlet(
-    "PyGame - Paradgima Experimental"
-)  # important this is first
-
-# GAME
+## GAME
 pygame.init()
-current_level = 0
 
-# Dimensions
+## Board, prompt list, commands list
+current_level = 0
+level = copy.deepcopy(boards_paradigm_SI[current_level]) # The board
+prompts = copy.deepcopy(prompts_paradigm_SI[current_level]) # Correct prompt order("AVANZAR","RETROCEDER","IZQUIERDA","DERECHA")
+commands_list = commands_list_board.pop(0) # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+
+
+## Screen Dimensions
 display_info = pygame.display.Info()  # Get the monitor's display info
 WIDTH = int(display_info.current_h)
 HEIGHT = int(display_info.current_h)
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
 
-level = copy.deepcopy(boards_paradigm_SI[current_level])
-prompts = copy.deepcopy(prompts_paradigm_SI[current_level])
+## Scales
 div_width = len(level[0])
 div_height = len(level)
 yscale = HEIGHT // div_height
 xscale = WIDTH // div_width
 
 
-commands_list = commands_list_board.pop(0)
-# 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN, 4-STOP
-
-screen = pygame.display.set_mode([WIDTH, HEIGHT])
-timer = pygame.time.Clock()
-fps = 60  # This decides how fast the game goes. Including pacman and ghosts.
+## General Variables
 font = pygame.font.Font("freesansbold.ttf", 30)
-color = "white"
 PI = math.pi
 
 
-## Images import
+## Import Images
 image_xscale = xscale
 image_yscale = yscale
-player_images = []
+
+# Player
 player_images = [
     pygame.transform.scale(
         pygame.image.load(f"assets/extras_images/right.png"),
@@ -74,6 +83,8 @@ player_images = [
         (image_xscale, image_yscale),
     ),
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+
+# Arrow
 arrow = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/arrow.png"), (image_xscale, image_yscale)
 )
@@ -83,28 +94,17 @@ arrow_images = [
     arrow,
     pygame.transform.rotate(arrow, 180),
 ]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
+
+#Cookie
 cookie = pygame.transform.scale(
     pygame.image.load(f"assets/extras_images/cookie.png"), (image_xscale, image_yscale)
 )
 
-## Positions
-start = start_positions_paradigm_SI.pop(0)
-player_x = int(start[0] * xscale)
-player_y = int(start[1] * yscale)
-direction = start[2]
-last_direction = start[2]
-
-# Other
-turns_allowed = [False, False, False, False]  # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-direction_command = start[2]
-player_speed = 1
-moving = False
-startup_counter = 0
-game_won = False
-last_activate_turn_tile = [1, 1]
-
-
+## Game Functions
 def draw_misc():
+    """
+    Draws win screen between levels
+    """
     if game_won:
         pygame.draw.rect(
             screen,
@@ -121,12 +121,27 @@ def draw_misc():
             10,
         )
         gameover_text = font.render("¡Nivel Completado!", True, "red")
+        text_rect = gameover_text.get_rect(center=(WIDTH//2, HEIGHT//3))
         gameover_text2 = font.render("¡Prepárate para el siguiente nivel!", True, "red")
-        screen.blit(gameover_text, (WIDTH // 2, HEIGHT // 3))
-        screen.blit(gameover_text2, (WIDTH // 3, HEIGHT // 2))
+        text_rect2 = gameover_text2.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+        screen.blit(gameover_text, text_rect)
+        screen.blit(gameover_text2, text_rect2)
 
 
 def command_leader(current_command, player_y, player_x):
+    """
+    Sets the next goal for the character
+
+    Args:
+        current_command: A string indicating the next movement
+        player_y: The player's "y" coordinate
+        player_x: The player's "x" coordinate
+
+    Returns:
+        goal_x: The next x coordinate
+        goal_y: The next y coordinate
+    """
     goal_x = player_x
     goal_y = player_y
     if current_command == "right":  # Right
@@ -140,17 +155,24 @@ def command_leader(current_command, player_y, player_x):
     return goal_x, goal_y
 
 
-def check_collisions(last_activate_turn_tile):
-    level[last_activate_turn_tile[0]][last_activate_turn_tile[1]] = 0
+def check_collisions(center_x, center_y):
+    """
+    Checks if a progress dot has been collected
+    """
     if 0 < player_x < 870:
         if level[center_y // yscale][center_x // xscale] == 1:
             level[center_y // yscale][center_x // xscale] = 0
         if level[center_y // yscale][center_x // xscale] == 2:
             level[center_y // yscale][center_x // xscale] = 0
-    return last_activate_turn_tile
 
 
 def draw_board(color):
+    """
+    Draws the board
+    
+    Args:
+        color: The color of the board's walls
+    """
     for i in range(len(level)):
         for j in range(len(level[i])):
             if level[i][j] == 1:
@@ -249,36 +271,46 @@ def draw_board(color):
                 screen.blit(number_text, (cell_x, cell_y))
 
 
-def draw_player(last_direction):
+def draw_player(direction, player_x, player_y):
+    """
+    Draws the player according to the direction its facing
+    
+    Args:
+        direction: The direction between 0-3 the player should be facing
+        player_x: The player's x coordinate
+        player_y: The player's y coordinate
+    """
     # 0-RIGHT, 1-LEFT, 2-UP, 3-DOWN
-    for direction_idx in range(0, 4):
-        if direction_idx == direction:
-            last_direction = direction
-            screen.blit(player_images[direction], (player_x, player_y))
-    if direction == 4:
-        screen.blit(player_images[last_direction], (player_x, player_y))
-    return last_direction
+    screen.blit(player_images[direction], (player_x, player_y))
 
 
-def move_player(play_x, play_y):
-    # r, l, u, d
-    # If current direction is right and right is allowed, move right
-    if direction == 0 and turns_allowed[0]:
+def move_player(direction,play_x, play_y):
+    """
+    Moves the player
+    
+    Args: 
+        direction: The direction between 0-3 the player should move
+        play_x: The player's x coordinate
+        play_y: The player's y coordinate
+    """
+    if direction == 0: # Right
         play_x += player_speed
-    elif direction == 1 and turns_allowed[1]:
+    elif direction == 1: # Left
         play_x -= player_speed
-    if direction == 2 and turns_allowed[2]:
+    if direction == 2: # Up
         play_y -= player_speed
-    elif direction == 3 and turns_allowed[3]:
+    elif direction == 3: # Down
         play_y += player_speed
     return play_x, play_y
 
 
-def change_colors(color):
-
+def change_colors():
+    """"
+    Change board colors
+    """
+    # Draw Arrow
     if len(commands_list) > 0:
         if first_movement == True:
-            movement_command = current_command
             if current_command == "right":  # Right
                 screen.blit(arrow_images[0], (player_x + xscale, player_y))
             elif current_command == "left":  # Left
@@ -288,7 +320,6 @@ def change_colors(color):
             elif current_command == "down":  # Down
                 screen.blit(arrow_images[3], (player_x, player_y + yscale))
         else:
-            movement_command = commands_list[0]
             if commands_list[0] == "right":  # Right
                 screen.blit(arrow_images[0], (player_x + xscale, player_y))
             elif commands_list[0] == "left":  # Left
@@ -298,75 +329,107 @@ def change_colors(color):
             elif commands_list[0] == "down":  # Down
                 screen.blit(arrow_images[3], (player_x, player_y + yscale))
 
+    
         pygame.display.flip()
         said_command = prompts.pop(0)
 
+        # Decision Making
         time.sleep(1.4)
-        # Green (Imagined Speech)
-        color = "green"
-        draw_board(color)
-        draw_player(last_direction)
+
+        # Imagined Speech (Green)
+        draw_board("green")
         pygame.display.flip()
         mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str(said_command)]))
         time.sleep(1.4)
 
-        # Blue (Auditory Speech)
-        color = "blue"
-        draw_board(color)
-        draw_player(last_direction)
+        # Auditory Speech (Blue)
+        draw_board("blue")
         pygame.display.flip()
-        mrkstream_allowed_turn_out.push_sample(
-            pylsl.vectorstr([str("Spoken " + said_command)])
-        )
+        mrkstream_allowed_turn_out.push_sample(pylsl.vectorstr([str("Spoken " + said_command)]))
         time.sleep(1.4)
-        color = "white"
-        draw_board(color)
 
-        return color
+        # Preparing for movement
+        draw_board("white")
 
 
-# Commands
+## Run Game
+# Game Variables
+timer = pygame.time.Clock()
+fps = 60  # This decides how fast the game goes
+player_speed = 1 # Moves 1 pixel
+startup_counter = 0
+moving = False
+game_won = False
+run = True
+
+# Player position and direction
+start = start_positions_paradigm_SI.pop(0)
+player_x = int(start[0] * xscale)
+player_y = int(start[1] * yscale)
+direction = start[2]
+last_direction = start[2]
+
+# Draw board
+screen.fill("black")
+draw_board("white")
+
+# Draw the player
+draw_player(direction, player_x, player_y)
+
+# Commands for first movement
+first_movement = True
 current_command = commands_list.pop(0)
 goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
-run = True
-first_movement = True
+# Run cycle
 while run:
     timer.tick(fps)
-    if startup_counter < fps * 20 and not game_won:
+
+    # Inital 20s pause
+    if startup_counter < fps * 2 and not game_won:
         moving = False
         startup_counter += 1
     else:
         moving = True
 
+    # Change board colors without moving (only first movment)
     if moving and first_movement:
-        color = change_colors(color)
+        color = change_colors()
         first_movement = False
 
+    # Draw board
     screen.fill("black")
-    draw_board(color)
+    draw_board("white")
+
+    # Move the player
+    if moving:
+        player_x, player_y = move_player(direction, player_x, player_y)
+
+    # Draw the player
+    draw_player(direction, player_x, player_y)
+
+    # Calculate player's center
     center_x = int(player_x + image_xscale // 2)
     center_y = int(player_y + image_yscale // 2)
 
-    last_direction = draw_player(last_direction)
-    turns_allowed = [True, True, True, True]
+    # Collect Progress Dots
+    check_collisions(center_x, center_y)
 
-    if moving:
-        player_x, player_y = move_player(player_x, player_y)
-
-    last_activate_turn_tile = check_collisions(last_activate_turn_tile)
-
+    # Stop the player
     if math.isclose(goal_x, player_x, abs_tol=0) and math.isclose(
-        goal_y, player_y, abs_tol=0
-    ):
-        change_colors(color)
-        # Change Command
+        goal_y, player_y, abs_tol=0):
+
+        # Change board colors
+        change_colors()
+        
+        # Update Command
         if len(commands_list) > 0:
             current_command = commands_list.pop(0)
         else:
             current_command = "None"
             game_won = True
-        # Change Direction
+
+        # Update player's direction
         if current_command == "right":
             direction = 0
         if current_command == "left":
@@ -376,6 +439,7 @@ while run:
         if current_command == "down":
             direction = 3
 
+        # Update goal
         goal_x, goal_y = command_leader(current_command, player_y, player_x)
 
     if game_won:
@@ -388,8 +452,6 @@ while run:
         player_x = int(start[0] * xscale)
         player_y = int(start[1] * yscale)
         direction = start[2]
-        direction_command = start[2]
-        # score = 0
         current_level += 1
         if current_level < len(boards_paradigm_SI):
             level = copy.deepcopy(boards_paradigm_SI[current_level])
