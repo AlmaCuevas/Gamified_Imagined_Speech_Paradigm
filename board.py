@@ -2,6 +2,8 @@
 # 4 = horizontal line, 5 = top right, 6 = top left, 7 = bot left, 8 = bot right
 # 9 = gate
 
+
+## Paths for Prompt Demonstration
 path_ar_0=[
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -82,47 +84,9 @@ path_ar_1=[
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8]
 ]
-path_di_0=[
-[6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,4,4,4,4,5,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,1,1,2,3,-1,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,6,4,4,8,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,3,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,2,3,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,4,8,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
-[7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8]
-]
 
+
+## Paths for User Examples
 path_0=[
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -284,6 +248,7 @@ path_03=[
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8]
 ]
 
+## Paths for Paradigm
 path_1 = [
 [6,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5],
 [3,0,0,0,0,0,0,0,0,0,0,0,3,-13,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
@@ -406,7 +371,7 @@ path_3=[
 [7,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,8],
 ]
 
-# Tutorial
+# Start Positions for Tutorial Prompt Examples
 start_avanzar_0=[16,16,2]
 start_avanzar_1=[16,16,0]
 start_retroceder_0=[16,13,2]
@@ -416,7 +381,7 @@ start_derecha_1=[16,16,2]
 start_izquierda_0=[16,13,1]
 start_izquierda_1=[19,16,2]
 
-# Examples
+# Start Positions for Tutorial User Examples
 start_0=[13,16,0]
 start_01=[16,16,1]
 start_02=[19,16,2]
@@ -445,7 +410,7 @@ path_commands_1 = ['up', 'left', 'right', 'up', 'right', 'left', 'up', 'down', '
 path_commands_2 = ['up', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up', 'left', 'left', 'right', 'up', 'right', 'right', 'left', 'up']
 path_commands_3 = ['up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'left', 'right', 'right', 'up', 'right', 'left', 'left', 'up', 'right', 'left', 'up']
 
-## List of prompts
+## List of prompts used in the Paradigm
 prompts1 = [
             "AVANZAR", "IZQUIERDA", "RETROCEDER", "IZQUIERDA", "DERECHA",
             "RETROCEDER", "DERECHA", "RETROCEDER", "DERECHA", "AVANZAR",
@@ -478,27 +443,27 @@ prompts3 = [
             "DERECHA", "RETROCEDER", "DERECHA"
             ]
 
-# Paradigm
+# Paradigm Variables
 prompts_paradigm_SI =[prompts1, prompts2, prompts3]
-boards_paradigm_SI=[path_1, path_2,path_3]
-start_positions_paradigm_SI=[start_1, start_2,start_3]
+boards_paradigm_SI=[path_1, path_2, path_3]
+start_positions_paradigm_SI=[start_1, start_2, start_3]
 commands_list_board =[path_commands_1, path_commands_2, path_commands_3]
 
-# Tutorial
-boards_tutorial=[path_ar_0,path_ar_1, # Tutorial AVANZAR
-                 path_ar_0,path_ar_1, # Tutorial RETROCEDER
-                 path_ar_0,path_ar_1, # Tutorial DERECHA
-                 path_ar_0,path_ar_1, # Tutorial IZQUIERDA
-                 path_0,path_01,path_02,path_03]
-start_positions_tutorial=[start_avanzar_0, start_avanzar_1,  # Tutorial AVANZAR
-                          start_retroceder_0, start_retroceder_1,  # Tutorial RETROCEDER
-                          start_derecha_0, start_derecha_1, # Tutorial DERECHA
-                          start_izquierda_0, start_izquierda_1, # Tutorial DERECHA
-                          start_0,start_01,start_02,start_03] 
-commands_list_tutorial =[path_commands_avanzar_0, path_commands_avanzar_1, # Tutorial AVANZAR
-                         path_commands_retroceder_0, path_commands_retroceder_1,  # Tutorial RETROCEDER
-                         path_commands_derecha_0, path_commands_derecha_1, # Tutorial DERECHA
-                         path_commands_izquierda_0, path_commands_izquierda_1, 
-                         path_commands_0,path_commands_01,path_commands_02,path_commands_03]
+# Tutorial Variables
+boards_tutorial=[path_ar_0,path_ar_1, # Prompt AVANZAR
+                 path_ar_0,path_ar_1, # Prompt RETROCEDER
+                 path_ar_0,path_ar_1, # Prompt DERECHA
+                 path_ar_0,path_ar_1, # Prompt IZQUIERDA
+                 path_0,path_01,path_02,path_03] # User Examples
+start_positions_tutorial=[start_avanzar_0, start_avanzar_1,  # Prompt AVANZAR
+                          start_retroceder_0, start_retroceder_1,  # Prompt RETROCEDER
+                          start_derecha_0, start_derecha_1, # Prompt DERECHA
+                          start_izquierda_0, start_izquierda_1, # Prompt IZQUIERDA
+                          start_0,start_01,start_02,start_03] # User Examples
+commands_list_tutorial =[path_commands_avanzar_0, path_commands_avanzar_1, # Prompt AVANZAR
+                         path_commands_retroceder_0, path_commands_retroceder_1,  # Prompt RETROCEDER
+                         path_commands_derecha_0, path_commands_derecha_1, # Prompt DERECHA
+                         path_commands_izquierda_0, path_commands_izquierda_1, # Prompt IZQUIERDA
+                         path_commands_0,path_commands_01,path_commands_02,path_commands_03] # User Examples
 
 
