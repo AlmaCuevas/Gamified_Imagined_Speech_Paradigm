@@ -30,7 +30,7 @@ def lsl_mrk_outlet(name):
     return outlet
 
 # Important this is first
-mrkstream_allowed_turn_out = lsl_mrk_outlet("PyGame - Paradgima Experimental")  
+mrkstream_allowed_turn_out = lsl_mrk_outlet("PyGame - Experimental Paradigm")  
 
 ## GAME
 pygame.init()
@@ -386,7 +386,7 @@ while run:
     timer.tick(fps)
 
     # Inital 20s pause
-    if startup_counter < fps * 2 and not game_won:
+    if startup_counter < fps * 20 and not game_won:
         moving = False
         startup_counter += 1
     else:
