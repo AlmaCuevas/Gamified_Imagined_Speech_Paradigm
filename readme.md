@@ -14,8 +14,6 @@ Suspecting that your acquisition paradimg may affect the user's concentration or
 
 **Results Based on User Experience Questionnaire*
 
-[Database](https://data.mendeley.com/datasets/57g8z63tmy/1)
-
 ## Description of files:
 * board.py = boards for each level, start positions and sequence order
 * requirements.txt = the packages required
@@ -35,3 +33,9 @@ This code was inspired from https://github.com/plemaster01/PythonPacman, for a t
 *Extra Points*
 - We suggest running *tutorial.py* before anything else, so you get accostumed to the game and specially the use of the commands. No connection is needed for performing the tutorial.
 - If you do not have an EEG, you can still run the program and examine the game.
+
+
+# Resources
+[Database](https://data.mendeley.com/datasets/57g8z63tmy/1)
+[Traditional Imagined Speech Paradigm](https://github.com/EdgarAgRod/Traditional_Imagined_Speech_Paradigm)
+[Imagined Speech Preprocessing](https://github.com/EdgarAgRod/Imagined_Speech_Preprocessing)
