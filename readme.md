@@ -6,12 +6,15 @@ Brain Computer Interfaces are a fast-growing technology that transform human tho
 
 Suspecting that your acquisition paradimg may affect the user's concentration or alertness? Try this paradigm! Our results have showned an overall significant improvement of user experience compared to traditional paradigms
 
+## Traditional = Reading words in a screen with a tempo
 ![UEQ_Traditional](https://github.com/AlmaCuevas/Gamified_Imagined_Speech_Paradigm/assets/134006734/61b429f2-26ed-45cb-ac0a-19fcc4043cf1)
+
+## Experimental = Gamified Version
 ![UEQ_Experimental](https://github.com/AlmaCuevas/Gamified_Imagined_Speech_Paradigm/assets/134006734/1de05371-e23f-429f-8e36-369a1c7e3408)
 
 **Results Based on User Experience Questionnaire*
 
-Note: The database and its description will be accessible shortly.
+[Database](https://data.mendeley.com/datasets/57g8z63tmy/1)
 
 ## Description of files:
 * board.py = boards for each level, start positions and sequence order
