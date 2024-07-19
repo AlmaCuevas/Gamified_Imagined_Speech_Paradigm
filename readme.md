@@ -36,6 +36,6 @@ This code was inspired from https://github.com/plemaster01/PythonPacman, for a t
 
 
 # Resources
-[Database](https://data.mendeley.com/datasets/57g8z63tmy/1)
-[Traditional Imagined Speech Paradigm](https://github.com/EdgarAgRod/Traditional_Imagined_Speech_Paradigm)
-[Imagined Speech Preprocessing](https://github.com/EdgarAgRod/Imagined_Speech_Preprocessing)
+* [Database](https://data.mendeley.com/datasets/57g8z63tmy/1)
+* [Traditional Imagined Speech Paradigm](https://github.com/EdgarAgRod/Traditional_Imagined_Speech_Paradigm)
+* [Imagined Speech Preprocessing](https://github.com/EdgarAgRod/Imagined_Speech_Preprocessing)
