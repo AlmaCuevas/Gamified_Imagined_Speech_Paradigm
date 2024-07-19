@@ -32,6 +32,3 @@ This code was inspired from https://github.com/plemaster01/PythonPacman, for a t
 *Extra Points*
 - We suggest running *tutorial.py* before anything else, so you get accostumed to the game and specially the use of the commands. No connection is needed for performing the tutorial.
 - If you do not have an EEG, you can still run the program and examine the game.
-
-## License
-Choose a License
